@@ -28,6 +28,8 @@ public class Stealsolo extends JavaPlugin {
     public static String prefix;
     @Getter
     public static PlayerPointsAPI ppAPI;
+    @Getter
+    public static boolean debug;
 
 
     @Override
@@ -44,12 +46,13 @@ public class Stealsolo extends JavaPlugin {
         }
     }
 
-    private void initConfig() {
-        Stealsolo.configuration = getConfig();
+    private static void initConfig() {
+        Stealsolo.configuration = plugin.getConfig();
 
         insufficentPermissions = configuration.getString("InsufficentPermissions");
         permissionPrefix = configuration.getString("PermissionPrefix");
         prefix = configuration.getString("MessagePrefix");
+        debug = configuration.getBoolean("debug");
     }
 
     private void initEvents() {
@@ -65,5 +68,9 @@ public class Stealsolo extends JavaPlugin {
 
     private void initTabCompleters() {
         getCommand("paycoins").setTabCompleter(new PayCoinsTC());
+    }
+
+    public static void reloadConfiguration() {
+        initConfig();
     }
 }

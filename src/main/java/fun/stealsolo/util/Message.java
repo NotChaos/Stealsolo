@@ -61,6 +61,19 @@ public class Message {
         restricted(player, message);
     }
 
+    public static void restricted(Player player) {
+        restricted(player, Stealsolo.getInsufficentPermissions());
+    }
+
+    public static void restricted(CommandSender sender) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(Stealsolo.getPrefix() + ChatColor.RED + Stealsolo.getInsufficentPermissions());
+            return;
+        }
+
+        restricted(player, Stealsolo.getInsufficentPermissions());
+    }
+
     public static void restricted(Player player, TextComponent message) {
         player.spigot().sendMessage(message);
         player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
