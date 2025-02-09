@@ -1,0 +1,11 @@
+name: Stealsolo
+author: ChaoticDeveloper
+description:
+version: '1.0'
+main: fun.stealsolo.Stealsolo
+api-version: '1.21'
+commands:
+  nv:
+    description: Toggle nightvision
+    aliases:
+      - nightvision
