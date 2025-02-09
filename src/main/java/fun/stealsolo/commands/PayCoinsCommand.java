@@ -43,7 +43,7 @@ public class PayCoinsCommand implements CommandExecutor {
             return false;
         }
 
-        Stealsolo.getPpAPI().payAsync(p.getUniqueId(), target.getUniqueId(), amount);
+        Stealsolo.getPpAPI().pay(p.getUniqueId(), target.getUniqueId(), amount);
         Message.successful(sender, "You have paid " + ChatColor.BOLD + amount + ChatColor.RESET + ChatColor.GREEN + " coins to " + ChatColor.BOLD + target.getName() + ChatColor.RESET + ChatColor.GREEN + ".");
         Message.successful(target, "You have received " + ChatColor.BOLD + amount + ChatColor.RESET + ChatColor.GREEN + " coins from " + ChatColor.BOLD + p.getName() + ChatColor.RESET + ChatColor.GREEN + ".");
         return false;
