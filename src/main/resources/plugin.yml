@@ -4,8 +4,11 @@ description:
 version: '1.0'
 main: fun.stealsolo.Stealsolo
 api-version: '1.21'
+depend: [PlayerPoints]
 commands:
   nv:
     description: Toggle nightvision
     aliases:
       - nightvision
+  paycoins:
+    description: Pay coins to another player
