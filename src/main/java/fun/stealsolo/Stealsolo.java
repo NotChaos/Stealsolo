@@ -19,7 +19,7 @@ public class Stealsolo extends JavaPlugin {
     @Getter
     public static Plugin plugin;
     @Getter
-    public static Configuration config;
+    public static Configuration configuration;
     @Getter
     public static String insufficentPermissions;
     @Getter
@@ -45,11 +45,11 @@ public class Stealsolo extends JavaPlugin {
     }
 
     private void initConfig() {
-        Stealsolo.config = getConfig();
+        Stealsolo.configuration = getConfig();
 
-        insufficentPermissions = config.getString("InsufficentPermissions");
-        permissionPrefix = config.getString("PermissionPrefix");
-        prefix = config.getString("MessagePrefix");
+        insufficentPermissions = configuration.getString("InsufficentPermissions");
+        permissionPrefix = configuration.getString("PermissionPrefix");
+        prefix = configuration.getString("MessagePrefix");
     }
 
     private void initEvents() {
