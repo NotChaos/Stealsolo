@@ -1,14 +1,14 @@
-name: Stealsolo
-author: ChaoticDeveloper
-description:
+name: StealSolo
+author: Chaos
+description: StealSolo plugin
 version: '1.0'
 main: fun.stealsolo.Stealsolo
 api-version: '1.21'
 depend: [PlayerPoints]
 commands:
-  nv:
+  nightvision:
     description: Toggle nightvision
     aliases:
-      - nightvision
+      - nv
   paycoins:
     description: Pay coins to another player

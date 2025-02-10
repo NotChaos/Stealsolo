@@ -11,13 +11,13 @@ public class Permission {
             Stealsolo.getPlugin().getLogger().info("Checking permission " + permission + " for player " + player.getName());
         }
 
-        return player.hasPermission(Stealsolo.getPermissionPrefix() + "." + permission);
+        return player.hasPermission("stealsolo." + permission);
     }
 
     public static boolean hasPermission(CommandSender sender, String permission) {
         if (sender instanceof Player player) {
             return hasPermission(player, permission);
         }
-        return true;
+        return sender.hasPermission("stealsolo." + permission);
     }
 }

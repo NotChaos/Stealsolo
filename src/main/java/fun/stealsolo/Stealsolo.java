@@ -3,6 +3,7 @@ package fun.stealsolo;
 import fun.stealsolo.commands.NightvisionCommand;
 import fun.stealsolo.commands.PayCoinsCommand;
 import fun.stealsolo.events.InventoryClickEvent;
+import fun.stealsolo.tabcompleter.EmptyTC;
 import fun.stealsolo.tabcompleter.PayCoinsTC;
 import lombok.Getter;
 import org.black_ixx.playerpoints.PlayerPoints;
@@ -22,8 +23,6 @@ public class Stealsolo extends JavaPlugin {
     public static Configuration configuration;
     @Getter
     public static String insufficentPermissions;
-    @Getter
-    public static String permissionPrefix;
     @Getter
     public static String prefix;
     @Getter
@@ -50,7 +49,6 @@ public class Stealsolo extends JavaPlugin {
         Stealsolo.configuration = plugin.getConfig();
 
         insufficentPermissions = configuration.getString("InsufficentPermissions");
-        permissionPrefix = configuration.getString("PermissionPrefix");
         prefix = configuration.getString("MessagePrefix");
         debug = configuration.getBoolean("debug");
     }
@@ -60,14 +58,19 @@ public class Stealsolo extends JavaPlugin {
     }
 
     private void initCommands() {
-        Objects.requireNonNull(getCommand("nv")).setExecutor(new NightvisionCommand());
+        Objects.requireNonNull(getCommand("nightvision")).setExecutor(new NightvisionCommand());
         if (ppAPI != null) {
             Objects.requireNonNull(getCommand("paycoins")).setExecutor(new PayCoinsCommand());
+        } else {
+            Objects.requireNonNull(getCommand("paycoins")).unregister(Bukkit.getCommandMap());
         }
     }
 
     private void initTabCompleters() {
-        getCommand("paycoins").setTabCompleter(new PayCoinsTC());
+        if (ppAPI != null) {
+            Objects.requireNonNull(getCommand("paycoins")).setTabCompleter(new PayCoinsTC());
+        }
+        getCommand("nightvision").setTabCompleter(new EmptyTC());
     }
 
     public static void reloadConfiguration() {
