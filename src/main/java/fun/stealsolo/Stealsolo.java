@@ -2,7 +2,6 @@ package fun.stealsolo;
 
 import fun.stealsolo.commands.NightvisionCommand;
 import fun.stealsolo.commands.PayCoinsCommand;
-import fun.stealsolo.events.InventoryClickEvent;
 import fun.stealsolo.tabcompleter.EmptyTC;
 import fun.stealsolo.tabcompleter.PayCoinsTC;
 import lombok.Getter;
@@ -54,7 +53,6 @@ public class Stealsolo extends JavaPlugin {
     }
 
     private void initEvents() {
-        Bukkit.getPluginManager().registerEvents(new InventoryClickEvent(), this);
     }
 
     private void initCommands() {
