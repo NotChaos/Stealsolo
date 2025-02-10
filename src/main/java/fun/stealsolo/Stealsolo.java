@@ -2,13 +2,13 @@ package fun.stealsolo;
 
 import fun.stealsolo.commands.NightvisionCommand;
 import fun.stealsolo.commands.PayCoinsCommand;
-import fun.stealsolo.events.InventoryClickEvent;
 import fun.stealsolo.tabcompleter.PayCoinsTC;
 import lombok.Getter;
 import org.black_ixx.playerpoints.PlayerPoints;
 import org.black_ixx.playerpoints.PlayerPointsAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.Configuration;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
