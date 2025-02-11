@@ -12,3 +12,11 @@ commands:
       - nv
   paycoins:
     description: Pay coins to another player
+  stealsolo:
+    description: StealSolo plugin
+  trash:
+    description: Trash items
+  media:
+    description: announce a message as media
+  ping:
+    description: Check your own ping
