@@ -1,7 +1,8 @@
 InsufficentPermissions: "§4You do not have permission to use this command."
-PermissionPrefix: "stealsolo-base"
 MessagePrefix: "§4§lStealSolo §f§l| "
 
+# in seconds (5 minutes)
+MediaCooldown: 300
 
-
+# don't touch this Raven (will spam the console like a LOT)
 debug: false

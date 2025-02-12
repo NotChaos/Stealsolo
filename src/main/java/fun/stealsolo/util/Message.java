@@ -10,92 +10,150 @@ import org.bukkit.entity.Player;
 public class Message {
 
     public static void invalid(Player p, String message) {
-        p.sendMessage(Stealsolo.getPrefix() + ChatColor.RED + message);
+        invalid(p, message, true);
+    }
+
+    public static void invalid(Player p, String message, boolean withPrefix) {
+        p.sendMessage((withPrefix ? Stealsolo.getPrefix() : "") + ChatColor.RED + message);
         p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_DIDGERIDOO, 1, 1);
     }
 
     public static void invalid(CommandSender sender, String message) {
+        invalid(sender, message, true);
+    }
+
+    public static void invalid(CommandSender sender, String message, boolean withPrefix) {
         if (sender instanceof Player player) {
-            invalid(player, message);
+            invalid(player, message, withPrefix);
             return;
         }
 
-        sender.sendMessage(Stealsolo.getPrefix() + ChatColor.RED + message);
+        sender.sendMessage((withPrefix ? Stealsolo.getPrefix() : "") + ChatColor.RED + message);
     }
 
     public static void invalid(Player player, TextComponent message) {
-        player.spigot().sendMessage(message);
+        invalid(player, message, true);
+    }
+
+    public static void invalid(Player player, TextComponent message, boolean withPrefix) {
+        if (withPrefix) {
+            player.spigot().sendMessage(new TextComponent(Stealsolo.getPrefix() + message.getText()));
+        } else {
+            player.spigot().sendMessage(message);
+        }
         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_DIDGERIDOO, 1, 1);
     }
 
     public static void successful(Player player, String message) {
-        player.sendMessage(Stealsolo.getPrefix() + ChatColor.GREEN + message);
+        successful(player, message, true);
+    }
+
+    public static void successful(Player player, String message, boolean withPrefix) {
+        player.sendMessage((withPrefix ? Stealsolo.getPrefix() : "") + ChatColor.GREEN + message);
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
     }
 
     public static void successful(CommandSender sender, String message) {
+        successful(sender, message, true);
+    }
+
+    public static void successful(CommandSender sender, String message, boolean withPrefix) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(Stealsolo.getPrefix() + ChatColor.GREEN + message);
+            sender.sendMessage((withPrefix ? Stealsolo.getPrefix() : "") + ChatColor.GREEN + message);
             return;
         }
 
-        successful(player, message);
+        successful(player, message, withPrefix);
     }
 
     public static void successful(Player player, TextComponent message) {
-        player.spigot().sendMessage(message);
+        successful(player, message, true);
+    }
+
+    public static void successful(Player player, TextComponent message, boolean withPrefix) {
+        if (withPrefix) {
+            player.spigot().sendMessage(new TextComponent(Stealsolo.getPrefix() + message.getText()));
+        } else {
+            player.spigot().sendMessage(message);
+        }
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
     }
 
     public static void restricted(Player player, String message) {
-        player.sendMessage(Stealsolo.getPrefix() + ChatColor.RED + message);
+        restricted(player, message, true);
+    }
+
+    public static void restricted(Player player, String message, boolean withPrefix) {
+        player.sendMessage((withPrefix ? Stealsolo.getPrefix() : "") + ChatColor.RED + message);
         player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
     }
 
     public static void restricted(CommandSender sender, String message) {
+        restricted(sender, message, true);
+    }
+
+    public static void restricted(CommandSender sender, String message, boolean withPrefix) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(Stealsolo.getPrefix() + ChatColor.RED + message);
+            sender.sendMessage((withPrefix ? Stealsolo.getPrefix() : "") + ChatColor.RED + Stealsolo.getInsufficentPermissions());
             return;
         }
 
-        restricted(player, message);
+        restricted(player, message, withPrefix);
     }
 
     public static void restricted(Player player) {
-        restricted(player, Stealsolo.getInsufficentPermissions());
+        restricted(player, Stealsolo.getInsufficentPermissions(), true);
     }
 
     public static void restricted(CommandSender sender) {
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage(Stealsolo.getPrefix() + ChatColor.RED + Stealsolo.getInsufficentPermissions());
-            return;
-        }
-
-        restricted(player, Stealsolo.getInsufficentPermissions());
+        restricted(sender, Stealsolo.getInsufficentPermissions(), true);
     }
 
     public static void restricted(Player player, TextComponent message) {
-        player.spigot().sendMessage(message);
+        restricted(player, message, true);
+    }
+
+    public static void restricted(Player player, TextComponent message, boolean withPrefix) {
+        if (withPrefix) {
+            player.spigot().sendMessage(new TextComponent(Stealsolo.getPrefix() + message.getText()));
+        } else {
+            player.spigot().sendMessage(message);
+        }
         player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
     }
 
-
     public static void important(Player player, String message) {
-        player.sendMessage(Stealsolo.getPrefix() + ChatColor.RED + message);
+        important(player, message, true);
+    }
+
+    public static void important(Player player, String message, boolean withPrefix) {
+        player.sendMessage((withPrefix ? Stealsolo.getPrefix() : "") + ChatColor.RED + message);
         player.playSound(player.getLocation(), Sound.BLOCK_NETHERITE_BLOCK_STEP, 1, 1);
     }
 
     public static void important(CommandSender sender, String message) {
+        important(sender, message, true);
+    }
+
+    public static void important(CommandSender sender, String message, boolean withPrefix) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(Stealsolo.getPrefix() + ChatColor.RED + message);
+            sender.sendMessage((withPrefix ? Stealsolo.getPrefix() : "") + ChatColor.RED + message);
             return;
         }
 
-        important(player, message);
+        important(player, message, withPrefix);
     }
 
     public static void important(Player player, TextComponent message) {
-        player.spigot().sendMessage(message);
+        important(player, message, true);
+    }
+
+    public static void important(Player player, TextComponent message, boolean withPrefix) {
+        if (withPrefix) {
+            player.spigot().sendMessage(new TextComponent(Stealsolo.getPrefix() + message.getText()));
+        } else {
+            player.spigot().sendMessage(message);
+        }
         player.playSound(player.getLocation(), Sound.BLOCK_NETHERITE_BLOCK_STEP, 1, 1);
     }
 }
