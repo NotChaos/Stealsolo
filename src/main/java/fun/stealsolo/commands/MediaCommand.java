@@ -35,7 +35,7 @@ public class MediaCommand implements CommandExecutor {
                     long minutes = (timeLeft / 1000) / 60;
                     long seconds = (timeLeft / 1000) % 60;
                     String timeMessage = (minutes > 0 ? minutes + " minute" + (minutes > 1 ? "s" : "") + " and " : "") + seconds + " second" + (seconds != 1 ? "s" : "");
-                    Message.invalid(sender, "You must wait " + timeMessage + " before sending another message.", false);
+                    Message.invalid(sender, "You must wait " + timeMessage + " before sending another media advertisement.", false);
                     return false;
                 }
             }
