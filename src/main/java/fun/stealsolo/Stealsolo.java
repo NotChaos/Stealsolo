@@ -44,6 +44,8 @@ public class Stealsolo extends JavaPlugin {
 
         if (Bukkit.getPluginManager().isPluginEnabled("PlayerPoints")) {
             Stealsolo.ppAPI = PlayerPoints.getInstance().getAPI();
+        } else {
+            plugin.getLogger().warning("PlayerPoints not found! /paycoins will not work.");
         }
     }
 

@@ -4,7 +4,7 @@ description: StealSolo plugin
 version: '1.0'
 main: fun.stealsolo.Stealsolo
 api-version: '1.21'
-depend: [PlayerPoints]
+softdepend: [PlayerPoints]
 commands:
   nightvision:
     description: Toggle nightvision
@@ -18,5 +18,6 @@ commands:
     description: Trash items
   media:
     description: announce a message as media
+    permission: stealsolo.media
   ping:
     description: Check your own ping
