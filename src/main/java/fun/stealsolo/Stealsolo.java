@@ -13,6 +13,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.sql.Timestamp;
 import java.util.Objects;
 
 public class Stealsolo extends JavaPlugin {
@@ -35,6 +36,7 @@ public class Stealsolo extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        long timestamp = System.currentTimeMillis();
         Stealsolo.plugin = this;
 
         initConfig();
@@ -47,6 +49,9 @@ public class Stealsolo extends JavaPlugin {
         } else {
             plugin.getLogger().warning("PlayerPoints not found! /paycoins will not work.");
         }
+
+        long time =  System.currentTimeMillis() - timestamp;
+        plugin.getLogger().info("Stealsolo enabled in " + time + "ms");
     }
 
     private static void initConfig() {

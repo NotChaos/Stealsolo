@@ -15,11 +15,6 @@ public class TrashCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
-        if (args.length != 0) {
-            Message.invalid(sender, "Usage: /trash");
-            return false;
-        }
-
         if (!(sender instanceof Player player)) {
             Message.restricted(sender);
             return false;
@@ -27,6 +22,11 @@ public class TrashCommand implements CommandExecutor {
 
         if (!Permission.hasPermission(player, "trash")) {
             Message.restricted(player);
+            return false;
+        }
+
+        if (args.length != 0) {
+            Message.invalid(sender, "Usage: /trash");
             return false;
         }
 
