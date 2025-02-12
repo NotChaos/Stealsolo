@@ -8,30 +8,28 @@ softdepend: [PlayerPoints]
 commands:
   nightvision:
     description: Toggle nightvision
-    permission: stealsolo.nightvision
     aliases:
       - nv
   paycoins:
     description: Pay coins to another player
-    permission: stealsolo.paycoins
   stealsolo:
     description: StealSolo plugin
   trash:
-    permission: stealsolo.trash
     description: Trash items
   media:
     description: announce a message as media
-    permission: stealsolo.media
   ping:
     description: Check your own ping
-    permission: stealsolo.ping
 
 permissions:
   stealsolo.*:
     default: op
     children:
       - stealsolo.media
+      - stealsolo.reload
       - stealsolo.trash
+      - stealsolo.paycoins
+      - stealsolo.ping
   stealsolo.media:
     default: op
   stealsolo.trash:
@@ -42,3 +40,5 @@ permissions:
     default: true
   stealsolo.nightvision:
     default: true
+  stealsolo.reload:
+    default: op

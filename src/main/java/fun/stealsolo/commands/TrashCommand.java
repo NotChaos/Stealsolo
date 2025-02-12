@@ -25,7 +25,7 @@ public class TrashCommand implements CommandExecutor {
             return false;
         }
 
-        if (Permission.hasPermission(player, ".trash")) {
+        if (!Permission.hasPermission(player, "trash")) {
             Message.restricted(player);
             return false;
         }

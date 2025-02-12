@@ -18,7 +18,7 @@ public class PingCommand implements CommandExecutor {
             return false;
         }
 
-        if (Permission.hasPermission(sender, ".ping")) {
+        if (!Permission.hasPermission(sender, "ping")) {
             Message.restricted(sender);
             return false;
         }

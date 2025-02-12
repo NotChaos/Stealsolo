@@ -2,6 +2,7 @@ package fun.stealsolo.commands;
 
 import fun.stealsolo.Stealsolo;
 import fun.stealsolo.util.Message;
+import fun.stealsolo.util.Permission;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -23,6 +24,11 @@ public class MediaCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, String[] args) {
+        if (!Permission.hasPermission(sender, "media")) {
+            Message.restricted(sender);
+            return false;
+        }
+
         if (args.length == 0) {
             Message.invalid(sender, "Usage: /media <message>");
             return false;

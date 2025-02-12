@@ -12,7 +12,7 @@ public class PluginCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, String[] args) {
-        if (Permission.hasPermission(sender, ".reload")) {
+        if (!Permission.hasPermission(sender, "reload")) {
             Message.restricted(sender);
             return false;
         }
