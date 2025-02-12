@@ -30,7 +30,7 @@ public class TrashCommand implements CommandExecutor {
             return false;
         }
 
-        Inventory inventory = Bukkit.createInventory(player, 54, "Trash");
+        Inventory inventory = Bukkit.createInventory(player, 54, "TrashGUI");
 
         player.openInventory(inventory);
         player.playSound(player.getLocation(), Sound.BLOCK_BARREL_OPEN, 1.0F, 1.0F);
