@@ -50,9 +50,16 @@ public class MediaCommand implements CommandExecutor {
         }
 
         String message;
+        String hover;
         switch (args[0].toLowerCase()) {
-            case "upload" -> message = Stealsolo.getUploadMsg();
-            case "stream" -> message = Stealsolo.getStreamMsg();
+            case "upload" -> {
+                message = Stealsolo.getUploadMsg().replace("%player%", sender.getName()).replace("%link%", args[1]);
+                hover = Stealsolo.getUploadHoverMsg().replace("%player%", sender.getName()).replace("%link%", args[1]);
+            }
+            case "stream" -> {
+                message = Stealsolo.getStreamMsg().replace("%player%", sender.getName()).replace("%link%", args[1]);
+                hover = Stealsolo.getStreamHoverMsg().replace("%player%", sender.getName()).replace("%link%", args[1]);
+            }
             default -> {
                 Message.invalid(sender, "Invalid media type. Valid types are 'upload' and 'stream'.");
                 return false;
@@ -61,7 +68,7 @@ public class MediaCommand implements CommandExecutor {
 
         TextComponent textComponent = new TextComponent(message);
         textComponent.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, args[1]));
-        textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(sender.getName() + " has send the link: " + args[1])));
+        textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(hover)));
 
         if (sender instanceof Player p) {
             cooldown.put(p, System.currentTimeMillis());
