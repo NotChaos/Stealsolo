@@ -1,8 +1,14 @@
-InsufficentPermissions: "§4You do not have permission to use this command."
-MessagePrefix: "§4§lStealSolo §f§l| "
+InsufficentPermissions: "&4You do not have permission to use this command."
+MessagePrefix: "&4&lStealSolo &f&l| "
 
 # in seconds (5 minutes)
-MediaCooldown: 300
+media:
+  # cooldown for each /media usage
+  cooldown: 300
+
+  StreamMessage: "&5Check out a streamer on Twitch by clicking this message!"
+  UploadMessage: "&5Check out a video on YouTube by clicking this message!"
+
 
 # don't touch this Raven (will spam the console like a LOT)
 debug: false

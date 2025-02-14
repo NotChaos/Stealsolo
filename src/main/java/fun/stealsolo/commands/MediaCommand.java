@@ -8,7 +8,6 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -16,8 +15,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class MediaCommand implements CommandExecutor {
     private static final HashMap<Player, Long> cooldown = new HashMap<>();
@@ -29,8 +26,8 @@ public class MediaCommand implements CommandExecutor {
             return false;
         }
 
-        if (args.length == 0) {
-            Message.invalid(sender, "Usage: /media <message>");
+        if (args.length != 2) {
+            Message.invalid(sender, "Usage: /media <type> <link>");
             return false;
         }
 
@@ -45,41 +42,30 @@ public class MediaCommand implements CommandExecutor {
                     return false;
                 }
             }
+        }
+
+        if (!args[1].toLowerCase().startsWith("https://")) {
+            Message.invalid(sender, "Invalid link. Link must start with 'https://'.");
+            return false;
+        }
+
+        String message;
+        switch (args[0].toLowerCase()) {
+            case "upload" -> message = Stealsolo.getUploadMsg();
+            case "stream" -> message = Stealsolo.getStreamMsg();
+            default -> {
+                Message.invalid(sender, "Invalid media type. Valid types are 'upload' and 'stream'.");
+                return false;
+            }
+        }
+
+        TextComponent textComponent = new TextComponent(message);
+        textComponent.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, args[1]));
+        textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(sender.getName() + " has send the link: " + args[1])));
+
+        if (sender instanceof Player p) {
             cooldown.put(p, System.currentTimeMillis());
         }
-
-        String message = String.join(" ", args);
-        TextComponent textComponent = new TextComponent();
-
-        Pattern pattern = Pattern.compile("\\[\"(.*?)\",\\s*\"(.*?)\"\\]");
-        Matcher matcher = pattern.matcher(message);
-
-        int lastEnd = 0;
-        while (matcher.find()) {
-            String before = message.substring(lastEnd, matcher.start());
-            if (!before.isEmpty()) {
-                TextComponent beforeComponent = new TextComponent(ChatColor.translateAlternateColorCodes('&', before));
-                beforeComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("Sent by " + sender.getName() + ". Link can be malicious so check if it is a trusted domain like youtube.com or tiktok.com.")));
-                textComponent.addExtra(beforeComponent);
-            }
-
-            String linkText = matcher.group(1);
-            String linkUrl = matcher.group(2);
-
-            TextComponent linkComponent = new TextComponent(ChatColor.translateAlternateColorCodes('&', linkText));
-            linkComponent.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, linkUrl));
-            linkComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(linkUrl)));
-            textComponent.addExtra(linkComponent);
-
-            lastEnd = matcher.end();
-        }
-
-        if (lastEnd < message.length()) {
-            TextComponent afterComponent = new TextComponent(ChatColor.translateAlternateColorCodes('&', message.substring(lastEnd)));
-            afterComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("Sent by " + sender.getName() + ". Link can be malicious so check if it is a trusted domain like youtube.com or tiktok.com.")));
-            textComponent.addExtra(afterComponent);
-        }
-
         Bukkit.spigot().broadcast(textComponent);
         return true;
     }
