@@ -1,6 +1,9 @@
 package fun.stealsolo;
 
 import fun.stealsolo.commands.*;
+import fun.stealsolo.events.onInventoryClickEvent;
+import fun.stealsolo.events.onInventoryCloseEvent;
+import fun.stealsolo.events.onPlayerQuitEvent;
 import fun.stealsolo.tabcompleter.EmptyTC;
 import fun.stealsolo.tabcompleter.MediaTC;
 import fun.stealsolo.tabcompleter.PayCoinsTC;
@@ -16,7 +19,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Stealsolo extends JavaPlugin {
@@ -67,6 +69,7 @@ public class Stealsolo extends JavaPlugin {
     }
 
     public static void reloadConfiguration() {
+        plugin.reloadConfig();
         initConfig();
     }
 
@@ -91,6 +94,9 @@ public class Stealsolo extends JavaPlugin {
     }
 
     private void initEvents() {
+        getServer().getPluginManager().registerEvents(new onInventoryCloseEvent(), this);
+        getServer().getPluginManager().registerEvents(new onInventoryClickEvent(), this);
+        getServer().getPluginManager().registerEvents(new onPlayerQuitEvent(), this);
     }
 
     private void initCommands() {

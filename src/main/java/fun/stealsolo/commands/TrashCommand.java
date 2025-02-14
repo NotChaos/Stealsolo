@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
+import fun.stealsolo.events.onInventoryCloseEvent;
 
 public class TrashCommand implements CommandExecutor {
 
@@ -31,6 +32,8 @@ public class TrashCommand implements CommandExecutor {
         }
 
         Inventory inventory = Bukkit.createInventory(player, 54, "TrashGUI");
+
+        onInventoryCloseEvent.getPlayers().add(player);
 
         player.openInventory(inventory);
         player.playSound(player.getLocation(), Sound.BLOCK_BARREL_OPEN, 1.0F, 1.0F);

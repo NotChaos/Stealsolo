@@ -8,8 +8,8 @@ media:
 
   # %player% = player
   # %link% = link
-  StreamMessage: "&5Check out a streamer on Twitch by clicking this message!"
-  UploadMessage: "&5Check out a video on YouTube by clicking this message!"
+  StreamMessage: "&5Check out %player% on %link% by clicking this message!"
+  UploadMessage: "&5Check out a video on %link% from %player% by clicking this message!"
   StreamHoverMessage: "&5Click to watch %link%!"
   UploadHoverMessage: "&5Click to watch %player% at %link%!"
   # only shows when the mouse is over the chat message
