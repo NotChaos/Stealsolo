@@ -42,6 +42,7 @@ public class Stealsolo extends JavaPlugin {
     public static String streamMsg;
 
     private static void initConfig() {
+        plugin.saveDefaultConfig();
         Stealsolo.configuration = plugin.getConfig();
 
         FileConfiguration bukkitConfig = Bukkit.getServer().spigot().getConfig();
