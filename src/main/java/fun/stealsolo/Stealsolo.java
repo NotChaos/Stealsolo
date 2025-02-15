@@ -64,10 +64,10 @@ public class Stealsolo extends JavaPlugin {
         }
         prefix = ChatColor.translateAlternateColorCodes('&', configuration.getString("MessagePrefix", "&4&lStealSolo &f&l| "));
         mediaCooldown = configuration.getInt("media.cooldown");
-        uploadMsg = ChatColor.translateAlternateColorCodes('&', configuration.getString("media.UploadMessage", "&5Check out a video on YouTube by clicking this message!"));
-        streamMsg = ChatColor.translateAlternateColorCodes('&', configuration.getString("media.StreamMessage", "&#fdd835Check out a streamer on Twitch by clicking this message!"));
-        uploadHoverMsg = ChatColor.translateAlternateColorCodes('&', configuration.getString("media.UploadHoverMessage", "&5Click to watch the video!"));
-        streamHoverMsg = ChatColor.translateAlternateColorCodes('&', configuration.getString("media.StreamHoverMessage", "&5Click to watch %player% at %link%!"));
+        uploadMsg = configuration.getString("media.UploadMessage", "&5Check out a video on YouTube by clicking this message!");
+        streamMsg = configuration.getString("media.StreamMessage", "&#fdd835Check out a streamer on Twitch by clicking this message!");
+        uploadHoverMsg = configuration.getString("media.UploadHoverMessage", "&5Click to watch the video!");
+        streamHoverMsg = configuration.getString("media.StreamHoverMessage", "&5Click to watch %player% at %link%!");
         debug = configuration.getBoolean("debug");
     }
 
