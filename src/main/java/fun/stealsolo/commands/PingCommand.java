@@ -28,7 +28,8 @@ public class PingCommand implements CommandExecutor {
             return false;
         }
 
-        Message.successful(sender, "Your current ping is: " + ChatColor.BOLD + p.getPing());
+        Message.successful(sender,"" + ChatColor.GRAY + "Your current ping is: " + ChatColor.GREEN + p.getPing() + ChatColor.RESET + ChatColor.GREEN + "ᴍs");
+        p.sendActionBar("" + ChatColor.GRAY + "Your current ping is: " + ChatColor.GREEN + p.getPing() + ChatColor.RESET + ChatColor.GREEN + "ᴍs");
         return true;
     }
 }
