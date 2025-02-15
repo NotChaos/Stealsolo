@@ -1,11 +1,15 @@
 package fun.stealsolo.util;
 
 import fun.stealsolo.Stealsolo;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Message {
 
@@ -15,6 +19,15 @@ public class Message {
 
     public static void invalid(Player p, String message, boolean withPrefix) {
         p.sendMessage((withPrefix ? Stealsolo.getPrefix() : "") + ChatColor.RED + message);
+        p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_DIDGERIDOO, 1, 1);
+    }
+
+    public static void invalid(Player p, Component message) {
+        invalid(p, message, true);
+    }
+
+    public static void invalid(Player p, Component message, boolean withPrefix) {
+        p.sendMessage(withPrefix ? Component.text(Stealsolo.getPrefix()).append(message) : message);
         p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_DIDGERIDOO, 1, 1);
     }
 
@@ -31,17 +44,17 @@ public class Message {
         sender.sendMessage((withPrefix ? Stealsolo.getPrefix() : "") + ChatColor.RED + message);
     }
 
-    public static void invalid(Player player, TextComponent message) {
-        invalid(player, message, true);
+    public static void invalid(CommandSender sender, Component message) {
+        invalid(sender, message, true);
     }
 
-    public static void invalid(Player player, TextComponent message, boolean withPrefix) {
-        if (withPrefix) {
-            player.spigot().sendMessage(new TextComponent(Stealsolo.getPrefix() + message.getText()));
-        } else {
-            player.spigot().sendMessage(message);
+    public static void invalid(CommandSender sender, Component message, boolean withPrefix) {
+        if (sender instanceof Player player) {
+            invalid(player, message, withPrefix);
+            return;
         }
-        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_DIDGERIDOO, 1, 1);
+
+        sender.sendMessage(withPrefix ? Component.text(Stealsolo.getPrefix()).append(message) : message);
     }
 
     public static void successful(Player player, String message) {
@@ -50,6 +63,15 @@ public class Message {
 
     public static void successful(Player player, String message, boolean withPrefix) {
         player.sendMessage((withPrefix ? Stealsolo.getPrefix() : "") + ChatColor.GREEN + message);
+        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+    }
+
+    public static void successful(Player player, Component message) {
+        successful(player, message, true);
+    }
+
+    public static void successful(Player player, Component message, boolean withPrefix) {
+        player.sendMessage(withPrefix ? Component.text(Stealsolo.getPrefix()).append(message) : message);
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
     }
 
@@ -66,17 +88,17 @@ public class Message {
         successful(player, message, withPrefix);
     }
 
-    public static void successful(Player player, TextComponent message) {
-        successful(player, message, true);
+    public static void successful(CommandSender sender, Component message) {
+        successful(sender, message, true);
     }
 
-    public static void successful(Player player, TextComponent message, boolean withPrefix) {
-        if (withPrefix) {
-            player.spigot().sendMessage(new TextComponent(Stealsolo.getPrefix() + message.getText()));
-        } else {
-            player.spigot().sendMessage(message);
+    public static void successful(CommandSender sender, Component message, boolean withPrefix) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(withPrefix ? Component.text(Stealsolo.getPrefix()).append(message) : message);
+            return;
         }
-        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+
+        successful(player, message, withPrefix);
     }
 
     public static void restricted(Player player, String message) {
@@ -85,6 +107,15 @@ public class Message {
 
     public static void restricted(Player player, String message, boolean withPrefix) {
         player.sendMessage((withPrefix ? Stealsolo.getPrefix() : "") + ChatColor.RED + message);
+        player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
+    }
+
+    public static void restricted(Player player, Component message) {
+        restricted(player, message, true);
+    }
+
+    public static void restricted(Player player, Component message, boolean withPrefix) {
+        player.sendMessage(withPrefix ? Component.text(Stealsolo.getPrefix()).append(message) : message);
         player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
     }
 
@@ -101,6 +132,19 @@ public class Message {
         restricted(player, message, withPrefix);
     }
 
+    public static void restricted(CommandSender sender, Component message) {
+        restricted(sender, message, true);
+    }
+
+    public static void restricted(CommandSender sender, Component message, boolean withPrefix) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(withPrefix ? Component.text(Stealsolo.getPrefix()).append(message) : message);
+            return;
+        }
+
+        restricted(player, message, withPrefix);
+    }
+
     public static void restricted(Player player) {
         restricted(player, Stealsolo.getInsufficentPermissions(), true);
     }
@@ -109,25 +153,21 @@ public class Message {
         restricted(sender, Stealsolo.getInsufficentPermissions(), true);
     }
 
-    public static void restricted(Player player, TextComponent message) {
-        restricted(player, message, true);
-    }
-
-    public static void restricted(Player player, TextComponent message, boolean withPrefix) {
-        if (withPrefix) {
-            player.spigot().sendMessage(new TextComponent(Stealsolo.getPrefix() + message.getText()));
-        } else {
-            player.spigot().sendMessage(message);
-        }
-        player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
-    }
-
     public static void important(Player player, String message) {
         important(player, message, true);
     }
 
     public static void important(Player player, String message, boolean withPrefix) {
         player.sendMessage((withPrefix ? Stealsolo.getPrefix() : "") + ChatColor.RED + message);
+        player.playSound(player.getLocation(), Sound.BLOCK_NETHERITE_BLOCK_STEP, 1, 1);
+    }
+
+    public static void important(Player player, Component message) {
+        important(player, message, true);
+    }
+
+    public static void important(Player player, Component message, boolean withPrefix) {
+        player.sendMessage(withPrefix ? Component.text(Stealsolo.getPrefix()).append(message) : message);
         player.playSound(player.getLocation(), Sound.BLOCK_NETHERITE_BLOCK_STEP, 1, 1);
     }
 
@@ -144,16 +184,73 @@ public class Message {
         important(player, message, withPrefix);
     }
 
-    public static void important(Player player, TextComponent message) {
-        important(player, message, true);
+    public static void important(CommandSender sender, Component message) {
+        important(sender, message, true);
     }
 
-    public static void important(Player player, TextComponent message, boolean withPrefix) {
-        if (withPrefix) {
-            player.spigot().sendMessage(new TextComponent(Stealsolo.getPrefix() + message.getText()));
-        } else {
-            player.spigot().sendMessage(message);
+    public static void important(CommandSender sender, Component message, boolean withPrefix) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(withPrefix ? Component.text(Stealsolo.getPrefix()).append(message) : message);
+            return;
         }
-        player.playSound(player.getLocation(), Sound.BLOCK_NETHERITE_BLOCK_STEP, 1, 1);
+
+        important(player, message, withPrefix);
+    }
+
+    public static String convert(String message) {
+        String step1 = convertLegacyCodes(convertLegacyHex(message));
+        return convertLegacyCodes(step1);
+    }
+
+    private static String convertLegacyHex(String message) {
+        Pattern pattern = Pattern.compile("&#([a-fA-F0-9]{6})");
+        Matcher matcher = pattern.matcher(message);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            matcher.appendReplacement(sb, "<#" + matcher.group(1) + ">");
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
+    }
+
+    private static String convertLegacyCodes(String message) {
+        Map<Character, String> legacyMap = Map.ofEntries(
+                Map.entry('0', "black"),
+                Map.entry('1', "dark_blue"),
+                Map.entry('2', "dark_green"),
+                Map.entry('3', "dark_aqua"),
+                Map.entry('4', "dark_red"),
+                Map.entry('5', "dark_purple"),
+                Map.entry('6', "gold"),
+                Map.entry('7', "gray"),
+                Map.entry('8', "dark_gray"),
+                Map.entry('9', "blue"),
+                Map.entry('a', "green"),
+                Map.entry('b', "aqua"),
+                Map.entry('c', "red"),
+                Map.entry('d', "light_purple"),
+                Map.entry('e', "yellow"),
+                Map.entry('f', "white"),
+                Map.entry('k', "obfuscated"),
+                Map.entry('l', "bold"),
+                Map.entry('m', "strikethrough"),
+                Map.entry('n', "underlined"),
+                Map.entry('o', "italic"),
+                Map.entry('r', "reset")
+        );
+
+        Pattern legacyPattern = Pattern.compile("[§&]([0-9a-frk-or])", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = legacyPattern.matcher(message);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            char code = matcher.group(1).toLowerCase().charAt(0);
+            String tag = legacyMap.get(code);
+            if (tag == null) {
+                tag = "";
+            }
+            matcher.appendReplacement(sb, "<" + tag + ">");
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
     }
 }

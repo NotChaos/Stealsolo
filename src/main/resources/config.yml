@@ -14,6 +14,12 @@ media:
   UploadHoverMessage: "&5Click to watch %player% at %link%!"
   # only shows when the mouse is over the chat message
 
+paycoins:
+    # %player% = command sender
+    # %amount% = amount
+    # %target% = recipient
+  PayMessageSender: "&5You have paid %amount% coins to %target%."
+  PayMessageRecipient: "&5You have received %amount% coins from %player%."
 
 # don't touch this Raven (will spam the console like a LOT)
 debug: false

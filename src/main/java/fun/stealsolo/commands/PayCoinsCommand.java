@@ -3,6 +3,8 @@ package fun.stealsolo.commands;
 import fun.stealsolo.Stealsolo;
 import fun.stealsolo.util.Message;
 import fun.stealsolo.util.Permission;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -51,8 +53,10 @@ public class PayCoinsCommand implements CommandExecutor {
         }
 
         Stealsolo.getPpAPI().pay(p.getUniqueId(), target.getUniqueId(), amount);
-        Message.successful(sender, "You have paid " + ChatColor.BOLD + amount + ChatColor.RESET + ChatColor.GREEN + " coins to " + ChatColor.BOLD + target.getName() + ChatColor.RESET + ChatColor.GREEN + ".");
-        Message.successful(target, "You have received " + ChatColor.BOLD + amount + ChatColor.RESET + ChatColor.GREEN + " coins from " + ChatColor.BOLD + p.getName() + ChatColor.RESET + ChatColor.GREEN + ".");
+        MiniMessage miniMessage = MiniMessage.miniMessage();
+
+        Message.successful(sender, miniMessage.deserialize(Message.convert(Stealsolo.getPaycoinsMessageSender().replace("%player%", target.getName()).replace("%amount%", String.valueOf(amount).replace("%target%", target.getName())))));
+        Message.successful(target, miniMessage.deserialize(Message.convert(Stealsolo.getPaycoinsMessageRecipient().replace("%player%", target.getName()).replace("%amount%", String.valueOf(amount).replace("%target%", target.getName())))));
         return false;
     }
 }

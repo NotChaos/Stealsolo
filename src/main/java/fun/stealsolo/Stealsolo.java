@@ -49,6 +49,10 @@ public class Stealsolo extends JavaPlugin {
     public static String streamHoverMsg;
     @Getter
     public static boolean placeholderAPI;
+    @Getter
+    public static String paycoinsMessageSender;
+    @Getter
+    public static String paycoinsMessageRecipient;
 
     @Override
     public void onEnable() {
@@ -95,6 +99,9 @@ public class Stealsolo extends JavaPlugin {
         streamMsg = configuration.getString("media.StreamMessage", "&#fdd835Check out a streamer on Twitch by clicking this message!");
         uploadHoverMsg = configuration.getString("media.UploadHoverMessage", "&5Click to watch the video!");
         streamHoverMsg = configuration.getString("media.StreamHoverMessage", "&5Click to watch %player% at %link%!");
+        paycoinsMessageSender = configuration.getString("paycoins.PayMessageSender", "&5You have paid &6%amount% &5coins to &6%player%&5.");
+        paycoinsMessageRecipient = configuration.getString("paycoins.PayMessageRecipient", "&5You have received &6%amount% &5coins from &6%player%&5.");
+
         debug = configuration.getBoolean("debug");
 
         plugin.getLogger().info("Configuration loaded.");
