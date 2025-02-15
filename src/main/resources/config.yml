@@ -21,5 +21,21 @@ paycoins:
   PayMessageSender: "&5You have paid %amount% coins to %target%."
   PayMessageRecipient: "&5You have received %amount% coins from %player%."
 
+moshpit:
+  corner1:
+    x: 608
+    y: 92
+    z: -740
+    world: "minecraft:overworld"
+      # x, y, z, world of the first corner of the moshpit
+  corner2:
+    x: 622
+    y: 82
+    z: -754
+    world: "minecraft:overworld"
+    # x, y, z, world of the moshpit location
+  dmg-multiplier: 2
+    # damage multiplier for the moshpit
+
 # don't touch this Raven (will spam the console like a LOT)
 debug: false

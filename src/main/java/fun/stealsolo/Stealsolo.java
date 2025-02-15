@@ -13,6 +13,7 @@ import org.black_ixx.playerpoints.PlayerPoints;
 import org.black_ixx.playerpoints.PlayerPointsAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -53,25 +54,19 @@ public class Stealsolo extends JavaPlugin {
     public static String paycoinsMessageSender;
     @Getter
     public static String paycoinsMessageRecipient;
+    @Getter
+    public static Location moshpitCorner1;
+    @Getter
+    public static Location moshpitCorner2;
+    @Getter
+    public static int moshpitDmgMultiplier;
 
     @Override
     public void onEnable() {
         long timestamp = System.currentTimeMillis();
         Stealsolo.plugin = this;
 
-        if (Bukkit.getPluginManager().isPluginEnabled("PlayerPoints")) {
-            Bukkit.getLogger().info("PlayerPoints found! /paycoins will be enabled.");
-            Stealsolo.ppAPI = PlayerPoints.getInstance().getAPI();
-        } else {
-            plugin.getLogger().warning("PlayerPoints not found! /paycoins will not work.");
-        }
-
-        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            placeholderAPI = true;
-        } else {
-            plugin.getLogger().warning("PlaceholderAPI not found. Placeholders will not work.");
-        }
-
+        initDependencies();
         initConfig();
         initEvents();
         initCommands();
@@ -101,6 +96,11 @@ public class Stealsolo extends JavaPlugin {
         streamHoverMsg = configuration.getString("media.StreamHoverMessage", "&5Click to watch %player% at %link%!");
         paycoinsMessageSender = configuration.getString("paycoins.PayMessageSender", "&5You have paid &6%amount% &5coins to &6%player%&5.");
         paycoinsMessageRecipient = configuration.getString("paycoins.PayMessageRecipient", "&5You have received &6%amount% &5coins from &6%player%&5.");
+
+
+        moshpitCorner1 = new Location(Bukkit.getWorld(configuration.getString("moshpit.corner1.world")), configuration.getInt("moshpit.corner1.x"), configuration.getInt("moshpit.corner1.y"), configuration.getInt("moshpit.corner1.z"));
+        moshpitCorner2 = new Location(Bukkit.getWorld(configuration.getString("moshpit.corner2.world")), configuration.getInt("moshpit.corner2.x"), configuration.getInt("moshpit.corner2.y"), configuration.getInt("moshpit.corner2.z"));
+        moshpitDmgMultiplier = configuration.getInt("moshpit.dmg-multiplier", 2);
 
         debug = configuration.getBoolean("debug");
 
@@ -148,5 +148,22 @@ public class Stealsolo extends JavaPlugin {
         Objects.requireNonNull(getCommand("ping")).setTabCompleter(new EmptyTC());
 
         plugin.getLogger().info("Tab completers registered.");
+    }
+
+    public static void initDependencies() {
+        if (Bukkit.getPluginManager().isPluginEnabled("PlayerPoints")) {
+            Bukkit.getLogger().info("PlayerPoints found! /paycoins will be enabled.");
+            Stealsolo.ppAPI = PlayerPoints.getInstance().getAPI();
+        } else {
+            plugin.getLogger().warning("PlayerPoints not found! /paycoins will not work.");
+        }
+
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            placeholderAPI = true;
+        } else {
+            plugin.getLogger().warning("PlaceholderAPI not found. Placeholders will not work.");
+        }
+
+        plugin.getLogger().info("Dependencies loaded.");
     }
 }
