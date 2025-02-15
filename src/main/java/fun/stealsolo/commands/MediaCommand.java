@@ -3,11 +3,15 @@ package fun.stealsolo.commands;
 import fun.stealsolo.Stealsolo;
 import fun.stealsolo.util.Message;
 import fun.stealsolo.util.Permission;
+import me.clip.placeholderapi.PlaceholderAPI;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -15,6 +19,8 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MediaCommand implements CommandExecutor {
     private static final HashMap<Player, Long> cooldown = new HashMap<>();
@@ -66,6 +72,14 @@ public class MediaCommand implements CommandExecutor {
             }
         }
 
+        if (sender instanceof Player p) {
+            if (Stealsolo.isPlaceholderAPI()) {
+                OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(p.getUniqueId());
+                message = hex(PlaceholderAPI.setPlaceholders(offlinePlayer, message));
+                hover = hex(PlaceholderAPI.setPlaceholders(offlinePlayer, hover));
+            }
+        }
+
         TextComponent textComponent = new TextComponent(message);
         textComponent.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, args[1]));
         textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(hover)));
@@ -73,7 +87,28 @@ public class MediaCommand implements CommandExecutor {
         if (sender instanceof Player p) {
             cooldown.put(p, System.currentTimeMillis());
         }
-        Bukkit.spigot().broadcast(textComponent);
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.spigot().sendMessage(textComponent);
+        }
         return true;
+    }
+    public static String hex(String message) {
+        Pattern pattern = Pattern.compile("#[a-fA-F0-9]{6}");
+        Matcher matcher = pattern.matcher(message);
+        while (matcher.find()) {
+            String hexCode = message.substring(matcher.start(), matcher.end());
+            String replaceSharp = hexCode.replace('#', 'x');
+
+            char[] ch = replaceSharp.toCharArray();
+            StringBuilder builder = new StringBuilder("");
+            for (char c : ch) {
+                builder.append("&" + c);
+            }
+
+            message = message.replace(hexCode, builder.toString());
+            matcher = pattern.matcher(message);
+        }
+        return ChatColor.translateAlternateColorCodes('&', message);
     }
 }

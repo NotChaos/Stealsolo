@@ -5,6 +5,7 @@ import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -28,6 +29,10 @@ public class onInventoryCloseEvent implements Listener {
         if (event.getView().getTitle().equals("TrashGUI") && players.contains((Player) event.getPlayer())) {
             Player p = (Player) event.getPlayer();
             Inventory inventory = event.getInventory();
+
+            if (inventory.isEmpty()) {
+                return;
+            }
 
             inventories.put(p, inventory);
 
@@ -54,6 +59,7 @@ public class onInventoryCloseEvent implements Listener {
                 inv.setItem(14, confirmItem);
 
                 p.openInventory(inv);
+                p.playSound(p.getLocation(), Sound.BLOCK_BARREL_CLOSE, 1.0F, 1.0F);
             });
         }
     }

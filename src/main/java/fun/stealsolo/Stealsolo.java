@@ -19,6 +19,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Stealsolo extends JavaPlugin {
@@ -46,6 +47,8 @@ public class Stealsolo extends JavaPlugin {
     public static String uploadHoverMsg;
     @Getter
     public static String streamHoverMsg;
+    @Getter
+    public static boolean placeholderAPI;
 
     private static void initConfig() {
         plugin.saveDefaultConfig();
@@ -87,6 +90,12 @@ public class Stealsolo extends JavaPlugin {
             Stealsolo.ppAPI = PlayerPoints.getInstance().getAPI();
         } else {
             plugin.getLogger().warning("PlayerPoints not found! /paycoins will not work.");
+        }
+
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            placeholderAPI = true;
+        } else {
+            plugin.getLogger().warning("PlaceholderAPI not found. Placeholders will not work.");
         }
 
         long time = System.currentTimeMillis() - timestamp;

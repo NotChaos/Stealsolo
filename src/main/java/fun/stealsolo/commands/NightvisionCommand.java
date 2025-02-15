@@ -36,13 +36,13 @@ public class NightvisionCommand implements CommandExecutor {
 
         if (effectList.contains(p)) {
             p.removePotionEffect(PotionEffectType.NIGHT_VISION);
-            p.sendMessage(ChatColor.GRAY + "You no longer have Night Vision");
+            Message.successful(p, ChatColor.GRAY + "You no longer have Night Vision", false);
             p.sendActionBar(ChatColor.GRAY + "You no longer have Night Vision");
             effectList.remove(p);
             return false;
         }
         p.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, PotionEffect.INFINITE_DURATION, 1));
-        p.sendMessage(ChatColor.GREEN + "You now have Night Vision");
+        Message.successful(p, "You now have Night Vision", false);
         p.sendActionBar(ChatColor.GREEN + "You now have Night Vision");
         effectList.add(p);
         return true;

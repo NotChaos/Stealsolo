@@ -3,6 +3,7 @@ package fun.stealsolo.events;
 import fun.stealsolo.util.Message;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -47,6 +48,7 @@ public class onInventoryClickEvent implements Listener {
         } else if (confirm.equals(displayName)) {
             p.closeInventory();
             p.openInventory(onInventoryCloseEvent.getInventories().get(p));
+            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASEDRUM, 1.0F, 1.0F);
         }
 
         event.setCancelled(true);
