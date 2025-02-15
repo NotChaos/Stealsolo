@@ -34,7 +34,7 @@ public class Stealsolo extends JavaPlugin {
     @Getter
     public static String prefix;
     @Getter
-    public static PlayerPointsAPI ppAPI;
+    public static PlayerPointsAPI ppAPI = null;
     @Getter
     public static int mediaCooldown;
     @Getter
@@ -49,6 +49,33 @@ public class Stealsolo extends JavaPlugin {
     public static String streamHoverMsg;
     @Getter
     public static boolean placeholderAPI;
+
+    @Override
+    public void onEnable() {
+        long timestamp = System.currentTimeMillis();
+        Stealsolo.plugin = this;
+
+        if (Bukkit.getPluginManager().isPluginEnabled("PlayerPoints")) {
+            Bukkit.getLogger().info("PlayerPoints found! /paycoins will be enabled.");
+            Stealsolo.ppAPI = PlayerPoints.getInstance().getAPI();
+        } else {
+            plugin.getLogger().warning("PlayerPoints not found! /paycoins will not work.");
+        }
+
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            placeholderAPI = true;
+        } else {
+            plugin.getLogger().warning("PlaceholderAPI not found. Placeholders will not work.");
+        }
+
+        initConfig();
+        initEvents();
+        initCommands();
+        initTabCompleters();
+
+        long time = System.currentTimeMillis() - timestamp;
+        plugin.getLogger().info("Stealsolo enabled in " + time + "ms");
+    }
 
     private static void initConfig() {
         plugin.saveDefaultConfig();
@@ -69,6 +96,8 @@ public class Stealsolo extends JavaPlugin {
         uploadHoverMsg = configuration.getString("media.UploadHoverMessage", "&5Click to watch the video!");
         streamHoverMsg = configuration.getString("media.StreamHoverMessage", "&5Click to watch %player% at %link%!");
         debug = configuration.getBoolean("debug");
+
+        plugin.getLogger().info("Configuration loaded.");
     }
 
     public static void reloadConfiguration() {
@@ -76,36 +105,12 @@ public class Stealsolo extends JavaPlugin {
         initConfig();
     }
 
-    @Override
-    public void onEnable() {
-        long timestamp = System.currentTimeMillis();
-        Stealsolo.plugin = this;
-
-        initConfig();
-        initEvents();
-        initCommands();
-        initTabCompleters();
-
-        if (Bukkit.getPluginManager().isPluginEnabled("PlayerPoints")) {
-            Stealsolo.ppAPI = PlayerPoints.getInstance().getAPI();
-        } else {
-            plugin.getLogger().warning("PlayerPoints not found! /paycoins will not work.");
-        }
-
-        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            placeholderAPI = true;
-        } else {
-            plugin.getLogger().warning("PlaceholderAPI not found. Placeholders will not work.");
-        }
-
-        long time = System.currentTimeMillis() - timestamp;
-        plugin.getLogger().info("Stealsolo enabled in " + time + "ms");
-    }
-
     private void initEvents() {
         getServer().getPluginManager().registerEvents(new onInventoryCloseEvent(), this);
         getServer().getPluginManager().registerEvents(new onInventoryClickEvent(), this);
         getServer().getPluginManager().registerEvents(new onPlayerQuitEvent(), this);
+
+        plugin.getLogger().info("Events registered.");
     }
 
     private void initCommands() {
@@ -113,22 +118,28 @@ public class Stealsolo extends JavaPlugin {
         if (ppAPI != null) {
             Objects.requireNonNull(getCommand("paycoins")).setExecutor(new PayCoinsCommand());
         } else {
-            Objects.requireNonNull(getCommand("paycoins")).unregister(Bukkit.getCommandMap());
+            Objects.requireNonNull(getCommand("paycoins")).setExecutor(new DisabledCommand());
         }
         Objects.requireNonNull(getCommand("stealsolo")).setExecutor(new PluginCommand());
         Objects.requireNonNull(getCommand("trash")).setExecutor(new TrashCommand());
         Objects.requireNonNull(getCommand("media")).setExecutor(new MediaCommand());
         Objects.requireNonNull(getCommand("ping")).setExecutor(new PingCommand());
+
+        plugin.getLogger().info("Commands registered.");
     }
 
     private void initTabCompleters() {
         if (ppAPI != null) {
             Objects.requireNonNull(getCommand("paycoins")).setTabCompleter(new PayCoinsTC());
+        } else {
+            Objects.requireNonNull(getCommand("paycoins")).setTabCompleter(new EmptyTC());
         }
         Objects.requireNonNull(getCommand("nightvision")).setTabCompleter(new EmptyTC());
         Objects.requireNonNull(getCommand("stealsolo")).setTabCompleter(new PluginTC());
         Objects.requireNonNull(getCommand("trash")).setTabCompleter(new EmptyTC());
         Objects.requireNonNull(getCommand("media")).setTabCompleter(new MediaTC());
         Objects.requireNonNull(getCommand("ping")).setTabCompleter(new EmptyTC());
+
+        plugin.getLogger().info("Tab completers registered.");
     }
 }
