@@ -2,7 +2,6 @@ package fun.stealsolo.commands;
 
 import fun.stealsolo.Stealsolo;
 import fun.stealsolo.util.Message;
-import fun.stealsolo.util.Permission;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
@@ -17,20 +16,12 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class MediaCommand implements CommandExecutor {
     private static final HashMap<Player, Long> cooldown = new HashMap<>();
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, String[] args) {
-        if (!Permission.hasPermission(sender, "media")) {
-            Message.restricted(sender);
-            return false;
-        }
-
         if (args.length != 2) {
             Message.invalid(sender, "Usage: /media <type> <link>");
             return false;

@@ -20,7 +20,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Stealsolo extends JavaPlugin {
@@ -61,21 +60,6 @@ public class Stealsolo extends JavaPlugin {
     @Getter
     public static int moshpitDmgMultiplier;
 
-    @Override
-    public void onEnable() {
-        long timestamp = System.currentTimeMillis();
-        Stealsolo.plugin = this;
-
-        initDependencies();
-        initConfig();
-        initEvents();
-        initCommands();
-        initTabCompleters();
-
-        long time = System.currentTimeMillis() - timestamp;
-        plugin.getLogger().info("Stealsolo enabled in " + time + "ms");
-    }
-
     private static void initConfig() {
         plugin.saveDefaultConfig();
         Stealsolo.configuration = plugin.getConfig();
@@ -110,6 +94,38 @@ public class Stealsolo extends JavaPlugin {
     public static void reloadConfiguration() {
         plugin.reloadConfig();
         initConfig();
+    }
+
+    public static void initDependencies() {
+        if (Bukkit.getPluginManager().isPluginEnabled("PlayerPoints")) {
+            Bukkit.getLogger().info("PlayerPoints found! /paycoins will be enabled.");
+            Stealsolo.ppAPI = PlayerPoints.getInstance().getAPI();
+        } else {
+            plugin.getLogger().warning("PlayerPoints not found! /paycoins will not work.");
+        }
+
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            placeholderAPI = true;
+        } else {
+            plugin.getLogger().warning("PlaceholderAPI not found. Placeholders will not work.");
+        }
+
+        plugin.getLogger().info("Dependencies loaded.");
+    }
+
+    @Override
+    public void onEnable() {
+        long timestamp = System.currentTimeMillis();
+        Stealsolo.plugin = this;
+
+        initDependencies();
+        initConfig();
+        initEvents();
+        initCommands();
+        initTabCompleters();
+
+        long time = System.currentTimeMillis() - timestamp;
+        plugin.getLogger().info("Stealsolo enabled in " + time + "ms");
     }
 
     private void initEvents() {
@@ -148,22 +164,5 @@ public class Stealsolo extends JavaPlugin {
         Objects.requireNonNull(getCommand("ping")).setTabCompleter(new EmptyTC());
 
         plugin.getLogger().info("Tab completers registered.");
-    }
-
-    public static void initDependencies() {
-        if (Bukkit.getPluginManager().isPluginEnabled("PlayerPoints")) {
-            Bukkit.getLogger().info("PlayerPoints found! /paycoins will be enabled.");
-            Stealsolo.ppAPI = PlayerPoints.getInstance().getAPI();
-        } else {
-            plugin.getLogger().warning("PlayerPoints not found! /paycoins will not work.");
-        }
-
-        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            placeholderAPI = true;
-        } else {
-            plugin.getLogger().warning("PlaceholderAPI not found. Placeholders will not work.");
-        }
-
-        plugin.getLogger().info("Dependencies loaded.");
     }
 }

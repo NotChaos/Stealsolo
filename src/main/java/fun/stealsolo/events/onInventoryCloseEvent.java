@@ -13,7 +13,6 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
 
@@ -48,7 +47,7 @@ public class onInventoryCloseEvent implements Listener {
                 ItemStack infoItem = new ItemStack(Material.PAPER);
                 ItemMeta infoMeta = infoItem.getItemMeta();
                 infoMeta.setDisplayName(ChatColor.YELLOW + "Are you sure you want to delete the trash?");
-                infoMeta.setLore(new ArrayList<>(Arrays.asList(ChatColor.GRAY + "This action cannot be undone.")));
+                infoMeta.setLore(new ArrayList<>(List.of(ChatColor.GRAY + "This action cannot be undone.")));
                 infoItem.setItemMeta(infoMeta);
                 inv.setItem(4, infoItem);
 

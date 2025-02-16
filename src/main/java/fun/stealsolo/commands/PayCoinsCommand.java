@@ -2,8 +2,6 @@ package fun.stealsolo.commands;
 
 import fun.stealsolo.Stealsolo;
 import fun.stealsolo.util.Message;
-import fun.stealsolo.util.Permission;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -19,11 +17,6 @@ public class PayCoinsCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, String[] args) {
         if (!(sender instanceof Player p)) {
             Message.invalid(sender, "Only players can use this command.");
-            return false;
-        }
-
-        if (!Permission.hasPermission(p, "paycoins")) {
-            Message.restricted(p);
             return false;
         }
 

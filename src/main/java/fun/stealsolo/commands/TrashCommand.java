@@ -1,7 +1,7 @@
 package fun.stealsolo.commands;
 
+import fun.stealsolo.events.onInventoryCloseEvent;
 import fun.stealsolo.util.Message;
-import fun.stealsolo.util.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
@@ -10,7 +10,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.jetbrains.annotations.NotNull;
-import fun.stealsolo.events.onInventoryCloseEvent;
 
 public class TrashCommand implements CommandExecutor {
 
@@ -18,11 +17,6 @@ public class TrashCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (!(sender instanceof Player player)) {
             Message.restricted(sender);
-            return false;
-        }
-
-        if (!Permission.hasPermission(player, "trash")) {
-            Message.restricted(player);
             return false;
         }
 

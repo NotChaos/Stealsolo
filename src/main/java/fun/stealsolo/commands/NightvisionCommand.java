@@ -1,7 +1,6 @@
 package fun.stealsolo.commands;
 
 import fun.stealsolo.util.Message;
-import fun.stealsolo.util.Permission;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -21,11 +20,6 @@ public class NightvisionCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, String[] args) {
         if (!(sender instanceof Player p)) {
             Message.invalid(sender, "Only players can use this command.");
-            return false;
-        }
-
-        if (!Permission.hasPermission(p, "nightvision")) {
-            Message.restricted(p);
             return false;
         }
 
