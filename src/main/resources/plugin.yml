@@ -7,19 +7,24 @@ api-version: '1.21'
 softdepend: ["PlayerPoints", "PlaceholderAPI"]
 commands:
   nightvision:
+  permission: stealsolo.nightvision
     description: Toggle nightvision
     aliases:
       - nv
   paycoins:
     description: Pay coins to another player
+    permission: stealsolo.paycoins
   stealsolo:
     description: StealSolo plugin
   trash:
     description: Trash items
+    permission: stealsolo.trash
   media:
     description: announce a message as media
+    permission: stealsolo.media
   ping:
     description: Check your own ping
+    permission: stealsolo.ping
 
 permissions:
   stealsolo.*:
