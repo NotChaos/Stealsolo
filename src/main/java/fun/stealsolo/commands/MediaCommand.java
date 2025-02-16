@@ -70,12 +70,10 @@ public class MediaCommand implements CommandExecutor {
             }
         }
 
-        message = Message.convert(message);
-        hover = Message.convert(hover);
+        Component msg = Message.convertToComponent(message);
+        Component hov = Message.convertToComponent(hover);
 
-        MiniMessage miniMessage = MiniMessage.miniMessage();
-        Component messageComponent = miniMessage.deserialize(message)
-                .hoverEvent(HoverEvent.showText(miniMessage.deserialize(hover)))
+        msg.hoverEvent(HoverEvent.showText(hov))
                 .clickEvent(ClickEvent.openUrl(args[1]));
 
         if (sender instanceof Player p) {
@@ -83,7 +81,7 @@ public class MediaCommand implements CommandExecutor {
         }
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            player.sendMessage(messageComponent);
+            player.sendMessage(msg);
         }
         return true;
     }

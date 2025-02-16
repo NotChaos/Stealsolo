@@ -48,8 +48,20 @@ public class PayCoinsCommand implements CommandExecutor {
         Stealsolo.getPpAPI().pay(p.getUniqueId(), target.getUniqueId(), amount);
         MiniMessage miniMessage = MiniMessage.miniMessage();
 
-        Message.successful(sender, miniMessage.deserialize(Message.convert(Stealsolo.getPaycoinsMessageSender().replace("%player%", target.getName()).replace("%amount%", String.valueOf(amount).replace("%target%", target.getName())))));
-        Message.successful(target, miniMessage.deserialize(Message.convert(Stealsolo.getPaycoinsMessageRecipient().replace("%player%", target.getName()).replace("%amount%", String.valueOf(amount).replace("%target%", target.getName())))));
+        Message.successful(sender, miniMessage.deserialize(
+                Message.convertToString(
+                        Stealsolo.getPaycoinsMessageSender()
+                                .replace("%player%", p.getName())
+                                .replace("%amount%", String.valueOf(amount))
+                                .replace("%target%", target.getName())
+                )));
+        Message.successful(target, miniMessage.deserialize(
+                Message.convertToString(
+                        Stealsolo.getPaycoinsMessageRecipient()
+                                .replace("%player%", p.getName())
+                                .replace("%amount%", String.valueOf(amount))
+                                .replace("%target%", target.getName())
+                )));
         return false;
     }
 }

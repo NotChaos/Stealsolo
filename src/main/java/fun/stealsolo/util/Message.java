@@ -2,6 +2,7 @@ package fun.stealsolo.util;
 
 import fun.stealsolo.Stealsolo;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
@@ -18,7 +19,8 @@ public class Message {
     }
 
     public static void invalid(Player p, String message, boolean withPrefix) {
-        p.sendMessage((withPrefix ? Stealsolo.getPrefix() : "") + ChatColor.RED + message);
+        Component prefix = withPrefix ? Stealsolo.getPrefix() : Component.empty();
+        p.sendMessage(prefix.append(Component.text(ChatColor.RED + message)));
         p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_DIDGERIDOO, 1, 1);
     }
 
@@ -27,7 +29,8 @@ public class Message {
     }
 
     public static void invalid(Player p, Component message, boolean withPrefix) {
-        p.sendMessage(withPrefix ? Component.text(Stealsolo.getPrefix()).append(message) : message);
+        Component prefix = withPrefix ? Stealsolo.getPrefix() : Component.empty();
+        p.sendMessage(prefix.append(message));
         p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_DIDGERIDOO, 1, 1);
     }
 
@@ -41,7 +44,8 @@ public class Message {
             return;
         }
 
-        sender.sendMessage((withPrefix ? Stealsolo.getPrefix() : "") + ChatColor.RED + message);
+        Component prefix = withPrefix ? Stealsolo.getPrefix() : Component.empty();
+        sender.sendMessage(prefix.append(Component.text(ChatColor.RED + message)));
     }
 
     public static void invalid(CommandSender sender, Component message) {
@@ -54,7 +58,8 @@ public class Message {
             return;
         }
 
-        sender.sendMessage(withPrefix ? Component.text(Stealsolo.getPrefix()).append(message) : message);
+        Component prefix = withPrefix ? Stealsolo.getPrefix() : Component.empty();
+        sender.sendMessage(prefix.append(message));
     }
 
     public static void successful(Player player, String message) {
@@ -62,7 +67,8 @@ public class Message {
     }
 
     public static void successful(Player player, String message, boolean withPrefix) {
-        player.sendMessage((withPrefix ? Stealsolo.getPrefix() : "") + ChatColor.GREEN + message);
+        Component prefix = withPrefix ? Stealsolo.getPrefix() : Component.empty();
+        player.sendMessage(prefix.append(Component.text(ChatColor.GREEN + message)));
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
     }
 
@@ -71,7 +77,8 @@ public class Message {
     }
 
     public static void successful(Player player, Component message, boolean withPrefix) {
-        player.sendMessage(withPrefix ? Component.text(Stealsolo.getPrefix()).append(message) : message);
+        Component prefix = withPrefix ? Stealsolo.getPrefix() : Component.empty();
+        player.sendMessage(prefix.append(message));
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
     }
 
@@ -81,11 +88,12 @@ public class Message {
 
     public static void successful(CommandSender sender, String message, boolean withPrefix) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage((withPrefix ? Stealsolo.getPrefix() : "") + ChatColor.GREEN + message);
+            Component prefix = withPrefix ? Stealsolo.getPrefix() : Component.empty();
+            sender.sendMessage(prefix.append(Component.text(ChatColor.GREEN + message)));
             return;
         }
 
-        successful(player, message, withPrefix);
+        successful((Player) sender, message, withPrefix);
     }
 
     public static void successful(CommandSender sender, Component message) {
@@ -94,7 +102,8 @@ public class Message {
 
     public static void successful(CommandSender sender, Component message, boolean withPrefix) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(withPrefix ? Component.text(Stealsolo.getPrefix()).append(message) : message);
+            Component prefix = withPrefix ? Stealsolo.getPrefix() : Component.empty();
+            sender.sendMessage(prefix.append(message));
             return;
         }
 
@@ -106,7 +115,8 @@ public class Message {
     }
 
     public static void restricted(Player player, String message, boolean withPrefix) {
-        player.sendMessage((withPrefix ? Stealsolo.getPrefix() : "") + ChatColor.RED + message);
+        Component prefix = withPrefix ? Stealsolo.getPrefix() : Component.empty();
+        player.sendMessage(prefix.append(Component.text(ChatColor.RED + message)));
         player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
     }
 
@@ -115,7 +125,8 @@ public class Message {
     }
 
     public static void restricted(Player player, Component message, boolean withPrefix) {
-        player.sendMessage(withPrefix ? Component.text(Stealsolo.getPrefix()).append(message) : message);
+        Component prefix = withPrefix ? Stealsolo.getPrefix() : Component.empty();
+        player.sendMessage(prefix.append(message));
         player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1, 1);
     }
 
@@ -125,7 +136,8 @@ public class Message {
 
     public static void restricted(CommandSender sender, String message, boolean withPrefix) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage((withPrefix ? Stealsolo.getPrefix() : "") + ChatColor.RED + Stealsolo.getInsufficentPermissions());
+            Component prefix = withPrefix ? Stealsolo.getPrefix() : Component.empty();
+            sender.sendMessage(prefix.append(Component.text(ChatColor.RED + Stealsolo.getInsufficentPermissions())));
             return;
         }
 
@@ -138,7 +150,8 @@ public class Message {
 
     public static void restricted(CommandSender sender, Component message, boolean withPrefix) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(withPrefix ? Component.text(Stealsolo.getPrefix()).append(message) : message);
+            Component prefix = withPrefix ? Stealsolo.getPrefix() : Component.empty();
+            sender.sendMessage(prefix.append(message));
             return;
         }
 
@@ -158,7 +171,8 @@ public class Message {
     }
 
     public static void important(Player player, String message, boolean withPrefix) {
-        player.sendMessage((withPrefix ? Stealsolo.getPrefix() : "") + ChatColor.RED + message);
+        Component prefix = withPrefix ? Stealsolo.getPrefix() : Component.empty();
+        player.sendMessage(prefix.append(Component.text(ChatColor.RED + message)));
         player.playSound(player.getLocation(), Sound.BLOCK_NETHERITE_BLOCK_STEP, 1, 1);
     }
 
@@ -167,7 +181,8 @@ public class Message {
     }
 
     public static void important(Player player, Component message, boolean withPrefix) {
-        player.sendMessage(withPrefix ? Component.text(Stealsolo.getPrefix()).append(message) : message);
+        Component prefix = withPrefix ? Stealsolo.getPrefix() : Component.empty();
+        player.sendMessage(prefix.append(message));
         player.playSound(player.getLocation(), Sound.BLOCK_NETHERITE_BLOCK_STEP, 1, 1);
     }
 
@@ -177,7 +192,8 @@ public class Message {
 
     public static void important(CommandSender sender, String message, boolean withPrefix) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage((withPrefix ? Stealsolo.getPrefix() : "") + ChatColor.RED + message);
+            Component prefix = withPrefix ? Stealsolo.getPrefix() : Component.empty();
+            sender.sendMessage(prefix.append(Component.text(ChatColor.RED + message)));
             return;
         }
 
@@ -190,16 +206,25 @@ public class Message {
 
     public static void important(CommandSender sender, Component message, boolean withPrefix) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(withPrefix ? Component.text(Stealsolo.getPrefix()).append(message) : message);
+            Component prefix = withPrefix ? Stealsolo.getPrefix() : Component.empty();
+            sender.sendMessage(prefix.append(message));
             return;
         }
 
         important(player, message, withPrefix);
     }
 
-    public static String convert(String message) {
+    public static String convertToString(String message) {
         String step1 = convertLegacyCodes(convertLegacyHex(message));
         return convertLegacyCodes(step1);
+    }
+
+    public static Component convertToComponent(String message) {
+        MiniMessage miniMessage = MiniMessage.miniMessage();
+        String step1 = convertLegacyCodes(convertLegacyHex(message));
+        String step2 = convertLegacyCodes(step1);
+
+        return miniMessage.deserialize(step2);
     }
 
     private static String convertLegacyHex(String message) {

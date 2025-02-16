@@ -24,13 +24,13 @@ paycoins:
 moshpit:
   corner1:
     x: 608
-    y: 92
+    y: 82
     z: -740
     world: "minecraft:overworld"
       # x, y, z, world of the first corner of the moshpit
   corner2:
     x: 622
-    y: 82
+    y: 92
     z: -754
     world: "minecraft:overworld"
     # x, y, z, world of the moshpit location
