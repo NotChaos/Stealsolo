@@ -45,6 +45,11 @@ public class PayCoinsCommand implements CommandExecutor {
             return false;
         }
 
+        if (Stealsolo.getPpAPI().look(p.getUniqueId()) < amount) {
+            Message.invalid(p, "You do not have enough coins to transfer " + amount);
+            return false;
+        }
+
         Stealsolo.getPpAPI().pay(p.getUniqueId(), target.getUniqueId(), amount);
         MiniMessage miniMessage = MiniMessage.miniMessage();
 

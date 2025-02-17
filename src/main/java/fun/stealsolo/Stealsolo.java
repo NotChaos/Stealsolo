@@ -27,41 +27,40 @@ import java.util.regex.Pattern;
 
 public class Stealsolo extends JavaPlugin {
 
-    private static final Pattern HEX_PATTERN = Pattern.compile("&#([A-Fa-f0-9]{6})");
     @Getter
-    public static Plugin plugin;
+    private static Plugin plugin;
     @Getter
-    public static Configuration configuration;
+    private static Configuration configuration;
     @Getter
-    public static String insufficentPermissions;
+    private static String insufficentPermissions;
     @Getter
-    public static Component prefix;
+    private static Component prefix;
     @Getter
-    public static PlayerPointsAPI ppAPI = null;
+    private static PlayerPointsAPI ppAPI = null;
     @Getter
-    public static int mediaCooldown;
+    private static int mediaCooldown;
     @Getter
-    public static boolean debug;
+    private static boolean debug;
     @Getter
-    public static String uploadMsg;
+    private static String uploadMsg;
     @Getter
-    public static String streamMsg;
+    private static String streamMsg;
     @Getter
-    public static String uploadHoverMsg;
+    private static String uploadHoverMsg;
     @Getter
-    public static String streamHoverMsg;
+    private static String streamHoverMsg;
     @Getter
-    public static boolean placeholderAPI;
+    private static boolean placeholderAPI;
     @Getter
-    public static String paycoinsMessageSender;
+    private static String paycoinsMessageSender;
     @Getter
-    public static String paycoinsMessageRecipient;
+    private static String paycoinsMessageRecipient;
     @Getter
-    public static Location moshpitCorner1;
+    private static Location moshpitCorner1;
     @Getter
-    public static Location moshpitCorner2;
+    private static Location moshpitCorner2;
     @Getter
-    public static int moshpitDmgMultiplier;
+    private static int moshpitDmgMultiplier;
 
     private static void initConfig() {
         plugin.saveDefaultConfig();
