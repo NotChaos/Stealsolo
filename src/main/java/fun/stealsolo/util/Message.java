@@ -8,11 +8,16 @@ import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Message {
+
+    private static final Pattern HEX_PATTERN = Pattern.compile("&#([A-Fa-f0-9]{6})");
 
     public static void invalid(Player p, String message) {
         invalid(p, message, true);
@@ -93,7 +98,7 @@ public class Message {
             return;
         }
 
-        successful((Player) sender, message, withPrefix);
+        successful(player, message, withPrefix);
     }
 
     public static void successful(CommandSender sender, Component message) {
@@ -137,7 +142,7 @@ public class Message {
     public static void restricted(CommandSender sender, String message, boolean withPrefix) {
         if (!(sender instanceof Player player)) {
             Component prefix = withPrefix ? Stealsolo.getPrefix() : Component.empty();
-            sender.sendMessage(prefix.append(Component.text(ChatColor.RED + Stealsolo.getInsufficentPermissions())));
+            sender.sendMessage(prefix.append(Stealsolo.getInsufficientPermissions()));
             return;
         }
 
@@ -159,11 +164,11 @@ public class Message {
     }
 
     public static void restricted(Player player) {
-        restricted(player, Stealsolo.getInsufficentPermissions(), true);
+        restricted(player, Stealsolo.getInsufficientPermissions(), true);
     }
 
     public static void restricted(CommandSender sender) {
-        restricted(sender, Stealsolo.getInsufficentPermissions(), true);
+        restricted(sender, Stealsolo.getInsufficientPermissions(), true);
     }
 
     public static void important(Player player, String message) {
@@ -214,31 +219,43 @@ public class Message {
         important(player, message, withPrefix);
     }
 
-    public static String convertToString(String message) {
-        String step1 = convertLegacyCodes(convertLegacyHex(message));
+    public static String convertMessageToString(String message) {
+        String step1 = convertLegacyCodes(convertHexToLegacy(message));
         return convertLegacyCodes(step1);
     }
 
-    public static Component convertToComponent(String message) {
-        MiniMessage miniMessage = MiniMessage.miniMessage();
-        String step1 = convertLegacyCodes(convertLegacyHex(message));
-        String step2 = convertLegacyCodes(step1);
-
-        return miniMessage.deserialize(step2);
-    }
-
-    private static String convertLegacyHex(String message) {
-        Pattern pattern = Pattern.compile("&#([a-fA-F0-9]{6})");
-        Matcher matcher = pattern.matcher(message);
-        StringBuffer sb = new StringBuffer();
-        while (matcher.find()) {
-            matcher.appendReplacement(sb, "<#" + matcher.group(1) + ">");
+    public static String convertHexToLegacy(String text) {
+        if (text == null) {
+            return "";
         }
-        matcher.appendTail(sb);
-        return sb.toString();
+
+        Matcher matcher = HEX_PATTERN.matcher(text);
+        StringBuffer buffer = new StringBuffer();
+
+        while (matcher.find()) {
+            String hexColor = matcher.group(1);
+            matcher.appendReplacement(buffer, "§x§" + hexColor.charAt(0) + "§" + hexColor.charAt(1) + "§" + hexColor.charAt(2) + "§" + hexColor.charAt(3) + "§" + hexColor.charAt(4) + "§" + hexColor.charAt(5));
+        }
+
+        matcher.appendTail(buffer);
+        return buffer.toString().replaceAll("&([0-9a-fk-or])", "§$1");
     }
 
-    private static String convertLegacyCodes(String message) {
+    public static Component convertStringToComponent(String text) {
+        if (Stealsolo.isDebug()) {
+            Stealsolo.getPlugin().getLogger().info("converting String into component. Original: " + text);
+        }
+
+        String miniMessageText = convertLegacyCodes(text);
+        Component component = MiniMessage.miniMessage().deserialize(miniMessageText);
+
+        if (Stealsolo.isDebug()) {
+            Stealsolo.getPlugin().getLogger().info("converting fully converted string into component. Original: " + component);
+        }
+        return component;
+    }
+
+    public static String convertLegacyCodes(String message) {
         Map<Character, String> legacyMap = Map.ofEntries(
                 Map.entry('0', "black"),
                 Map.entry('1', "dark_blue"),
@@ -264,6 +281,8 @@ public class Message {
                 Map.entry('r', "reset")
         );
 
+        message = message.replaceAll("&#([A-Fa-f0-9]{6})", "<#$1>");
+
         Pattern legacyPattern = Pattern.compile("[§&]([0-9a-frk-or])", Pattern.CASE_INSENSITIVE);
         Matcher matcher = legacyPattern.matcher(message);
         StringBuffer sb = new StringBuffer();
@@ -277,5 +296,31 @@ public class Message {
         }
         matcher.appendTail(sb);
         return sb.toString();
+    }
+
+    public static List<Component> convertStringListToComponentList(List<String> messages) {
+        List<Component> components = new ArrayList<>();
+        for (String message : messages) {
+            components.add(convertStringToComponent(message));
+        }
+        return components;
+    }
+
+    public static List<String> convertStringListToLegacy(List<String> messages) {
+        List<String> convertedMessages = new ArrayList<>();
+        for (String message : messages) {
+            convertedMessages.add(convertMessageToString(message));
+        }
+        return convertedMessages;
+    }
+
+    public static Component deserializeMiniMessage(String message) {
+        return MiniMessage.miniMessage().deserialize(message);
+    }
+
+    public static List<Component> deserializeMiniMessageList(List<String> messages) {
+        return messages.stream()
+                .map(Message::deserializeMiniMessage)
+                .collect(Collectors.toList());
     }
 }

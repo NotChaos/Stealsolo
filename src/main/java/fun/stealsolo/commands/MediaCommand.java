@@ -6,7 +6,6 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -70,8 +69,8 @@ public class MediaCommand implements CommandExecutor {
             }
         }
 
-        Component msg = Message.convertToComponent(message);
-        Component hov = Message.convertToComponent(hover);
+        Component msg = Message.convertStringToComponent(message);
+        Component hov = Message.convertStringToComponent(hover);
 
         msg.hoverEvent(HoverEvent.showText(hov))
                 .clickEvent(ClickEvent.openUrl(args[1]));

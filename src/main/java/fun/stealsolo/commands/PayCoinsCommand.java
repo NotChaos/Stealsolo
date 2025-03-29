@@ -54,19 +54,17 @@ public class PayCoinsCommand implements CommandExecutor {
         MiniMessage miniMessage = MiniMessage.miniMessage();
 
         Message.successful(sender, miniMessage.deserialize(
-                Message.convertToString(
-                        Stealsolo.getPaycoinsMessageSender()
-                                .replace("%player%", p.getName())
-                                .replace("%amount%", String.valueOf(amount))
-                                .replace("%target%", target.getName())
-                )));
+                Stealsolo.getPaycoinsMessageSender()
+                        .replace("%player%", p.getName())
+                        .replace("%amount%", String.valueOf(amount))
+                        .replace("%target%", target.getName())
+        ));
         Message.successful(target, miniMessage.deserialize(
-                Message.convertToString(
-                        Stealsolo.getPaycoinsMessageRecipient()
-                                .replace("%player%", p.getName())
-                                .replace("%amount%", String.valueOf(amount))
-                                .replace("%target%", target.getName())
-                )));
+                Stealsolo.getPaycoinsMessageRecipient()
+                        .replace("%player%", p.getName())
+                        .replace("%amount%", String.valueOf(amount))
+                        .replace("%target%", target.getName())
+        ));
         return false;
     }
 }

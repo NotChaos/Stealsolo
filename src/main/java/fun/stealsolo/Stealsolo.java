@@ -15,7 +15,6 @@ import net.kyori.adventure.text.Component;
 import org.black_ixx.playerpoints.PlayerPoints;
 import org.black_ixx.playerpoints.PlayerPointsAPI;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -23,7 +22,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 public class Stealsolo extends JavaPlugin {
 
@@ -32,7 +30,7 @@ public class Stealsolo extends JavaPlugin {
     @Getter
     private static Configuration configuration;
     @Getter
-    private static String insufficentPermissions;
+    private static Component insufficientPermissions;
     @Getter
     private static Component prefix;
     @Getter
@@ -70,11 +68,11 @@ public class Stealsolo extends JavaPlugin {
         String noPermission = bukkitConfig.getString("messages.no-permission");
 
         if (noPermission == null) {
-            insufficentPermissions = ChatColor.translateAlternateColorCodes('&', configuration.getString("InsufficentPermissions", "&4You do not have permission to use this command."));
+            insufficientPermissions = Message.convertStringToComponent(configuration.getString("InsufficentPermissions", "&4You do not have permission to use this command."));
         } else {
-            insufficentPermissions = ChatColor.translateAlternateColorCodes('&', configuration.getString("messages.no-permission", "You do not have permission to use this command."));
+            insufficientPermissions = Message.convertStringToComponent(configuration.getString("messages.no-permission", "You do not have permission to use this command."));
         }
-        prefix = Message.convertToComponent(configuration.getString("MessagePrefix", "&4&lStealSolo &f&l| "));
+        prefix = Message.convertStringToComponent(configuration.getString("MessagePrefix", "&4&lStealSolo &f&l| "));
         mediaCooldown = configuration.getInt("media.cooldown");
         uploadMsg = configuration.getString("media.UploadMessage", "&5Check out a video on YouTube by clicking this message!");
         streamMsg = configuration.getString("media.StreamMessage", "&#fdd835Check out a streamer on Twitch by clicking this message!");
