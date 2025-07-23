@@ -1,7 +1,7 @@
 name: StealSolo
 author: Chaos
 description: StealSolo plugin
-version: '1.0'
+version: '1.0.1'
 main: fun.stealsolo.Stealsolo
 api-version: '1.21'
 softdepend: ["PlayerPoints", "PlaceholderAPI"]
@@ -25,6 +25,14 @@ commands:
   ping:
     description: Check your own ping
     permission: stealsolo.ping
+  afk:
+    description: Teleport to the AFK location
+    permission: stealsolo.afk
+  antipickup:
+    description: Toggle anti-pickup
+    aliases:
+      - antipick
+    permission: stealsolo.antipickup
 
 permissions:
   stealsolo.*:
@@ -35,6 +43,8 @@ permissions:
       - stealsolo.trash
       - stealsolo.paycoins
       - stealsolo.ping
+      - stealsolo.afk
+      - stealsolo.antipickup
   stealsolo.media:
     default: op
   stealsolo.trash:
@@ -47,3 +57,7 @@ permissions:
     default: true
   stealsolo.reload:
     default: op
+  stealsolo.afk:
+    default: true
+  stealsolo.antipickup:
+    default: true

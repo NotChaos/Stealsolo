@@ -2,6 +2,7 @@ package fun.stealsolo.commands;
 
 import fun.stealsolo.Stealsolo;
 import fun.stealsolo.util.Message;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -33,8 +34,15 @@ public class PayCoinsCommand implements CommandExecutor {
         }
 
         int amount;
+        String amountStr = args[1].toLowerCase();
         try {
-            amount = Integer.parseInt(args[1]);
+            if (amountStr.endsWith("k")) {
+                amount = (int) (Double.parseDouble(amountStr.substring(0, amountStr.length() - 1)) * 1_000);
+            } else if (amountStr.endsWith("m")) {
+                amount = (int) (Double.parseDouble(amountStr.substring(0, amountStr.length() - 1)) * 1_000_000);
+            } else {
+                amount = Integer.parseInt(amountStr);
+            }
         } catch (NumberFormatException e) {
             Message.invalid(sender, "Amount must be a number.");
             return false;
@@ -51,20 +59,26 @@ public class PayCoinsCommand implements CommandExecutor {
         }
 
         Stealsolo.getPpAPI().pay(p.getUniqueId(), target.getUniqueId(), amount);
-        MiniMessage miniMessage = MiniMessage.miniMessage();
 
-        Message.successful(sender, miniMessage.deserialize(
+        Component senderComponent = Message.convertStringToComponent(
                 Stealsolo.getPaycoinsMessageSender()
                         .replace("%player%", p.getName())
                         .replace("%amount%", String.valueOf(amount))
                         .replace("%target%", target.getName())
-        ));
-        Message.successful(target, miniMessage.deserialize(
+        );
+
+        Message.successful(sender, senderComponent);
+        sender.sendActionBar(senderComponent);
+
+        Component targetComponent = Message.convertStringToComponent(
                 Stealsolo.getPaycoinsMessageRecipient()
                         .replace("%player%", p.getName())
                         .replace("%amount%", String.valueOf(amount))
                         .replace("%target%", target.getName())
-        ));
+        );
+
+        Message.successful(target, targetComponent);
+        target.sendActionBar(targetComponent);
         return false;
     }
 }

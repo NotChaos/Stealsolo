@@ -21,21 +21,50 @@ paycoins:
   PayMessageSender: "&5You have paid %amount% coins to %target%."
   PayMessageRecipient: "&5You have received %amount% coins from %player%."
 
-moshpit:
-  corner1:
-    x: 608
-    y: 82
-    z: -740
+DmgBoostAreas:
+  moshpit:
     world: "minecraft:overworld"
+    corner1:
+      x: 608
+      y: 82
+      z: -740
       # x, y, z, world of the first corner of the moshpit
-  corner2:
-    x: 622
-    y: 92
-    z: -754
-    world: "minecraft:overworld"
-    # x, y, z, world of the moshpit location
-  dmg-multiplier: 2
+    corner2:
+      x: 622
+      y: 92
+      z: -754
+      # x, y, z, world of the moshpit location
+    dmg-multiplier: 2
     # damage multiplier for the moshpit
+  koth:
+    world: "minecraft:overworld"
+    corner1:
+      x: 608
+      y: 82
+      z: -740
+      # x, y, z, world of the first corner of the koth
+    corner2:
+      x: 622
+      y: 92
+      z: -754
+      # x, y, z, world of the koth location
+    dmg-multiplier: 1.5
+    # damage multiplier for the koth
+
+PingMessageSelf: "&5Your ping is &a%ping%ms&5."
+PingMessageOthers: "&7The ping of %target% is: &a%ping%&7ms"
+
+afk:
+  world: world
+  location:
+    x: 0
+    y: 100
+    z: 0
 
 # don't touch this Raven (will spam the console like a LOT)
 debug: false
+
+antipickup:
+  EnabledMessage: "&5Anti-pickup is now enabled."
+  DisabledMessage: "&5Anti-pickup is now disabled."
+  data:

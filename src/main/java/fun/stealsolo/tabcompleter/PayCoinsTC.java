@@ -17,7 +17,10 @@ public class PayCoinsTC implements TabCompleter {
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, @NotNull String[] args) {
         switch (args.length) {
             case 1 -> {
-                List<String> players = new ArrayList<>(Bukkit.getOnlinePlayers().stream().map(Player::getName).toList());
+                List<String> players = new ArrayList<>(Bukkit.getOnlinePlayers().stream()
+                        .map(Player::getName)
+                        .filter(name -> name.toLowerCase().startsWith(args[args.length - 1].toLowerCase()))
+                        .toList());
                 players.remove(sender.getName());
 
                 return players;

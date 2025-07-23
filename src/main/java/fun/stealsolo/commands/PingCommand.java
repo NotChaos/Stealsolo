@@ -1,6 +1,8 @@
 package fun.stealsolo.commands;
 
+import fun.stealsolo.Stealsolo;
 import fun.stealsolo.util.Message;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -17,13 +19,32 @@ public class PingCommand implements CommandExecutor {
             return false;
         }
 
-        if (args.length != 0) {
+        if (args.length > 1) {
             Message.invalid(sender, "Usage: /ping");
             return false;
         }
 
-        Message.successful(sender, ChatColor.GRAY + "Your current ping is: " + ChatColor.GREEN + p.getPing() + ChatColor.RESET + ChatColor.GREEN + "ᴍs");
-        p.sendActionBar(ChatColor.GRAY + "Your current ping is: " + ChatColor.GREEN + p.getPing() + ChatColor.RESET + ChatColor.GREEN + "ᴍs");
+        if (args.length == 1) {
+            Player target = Bukkit.getPlayer(args[0]);
+
+            if (target == null) {
+                Message.invalid(sender, "Player " + ChatColor.BOLD + args[0] + ChatColor.RESET + ChatColor.RED + " not found.");
+                return false;
+            }
+
+            Message.successful(sender, Message.convertStringToComponent(Stealsolo.getPingMessageOthers()
+                    .replace("%ping%", String.valueOf(p.getPing()))
+                    .replace("%target%", target.getName())
+                    ));
+            return false;
+        }
+
+        Message.successful(sender, Message.convertStringToComponent(Stealsolo.getPingMessageSelf()
+                .replace("%ping%", String.valueOf(p.getPing())
+                )));
+        p.sendActionBar(Message.convertStringToComponent(Stealsolo.getPingMessageSelf()
+                .replace("%ping%", String.valueOf(p.getPing())
+                )));
         return true;
     }
 }
