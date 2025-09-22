@@ -1,11 +1,14 @@
 package fun.stealsolo;
 
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.event.PacketListenerPriority;
+import fun.stealsolo.Packetevents.PacketEventsPacketListener;
 import fun.stealsolo.PlaceholderAPI.StealsoloExpansion;
 import fun.stealsolo.commands.*;
 import fun.stealsolo.events.*;
 import fun.stealsolo.tabcompleter.*;
-import fun.stealsolo.util.DamageArea;
-import fun.stealsolo.util.Message;
+import fun.stealsolo.util.*;
+import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import org.black_ixx.playerpoints.PlayerPoints;
@@ -14,14 +17,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.Configuration;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class Stealsolo extends JavaPlugin {
 
@@ -66,7 +68,19 @@ public class Stealsolo extends JavaPlugin {
     @Getter
     private static Component antiPickupDisabled;
     @Getter
-    private static Set<DamageArea> damageAreas = new HashSet<>();
+    private static final Set<DamageArea> damageAreas = new HashSet<>();
+    @Getter
+    private static Area afkArea;
+    @Getter
+    private static String participationRewardCommand;
+    @Getter
+    private static String correctAnswerRewardCommand;
+    @Getter
+    private static List<Component> questionMessage;
+    @Getter
+    private static List<Component> answeredMessage;
+    @Getter
+    private static List<Component> unansweredMessage;
 
     private static void initConfig() {
         getPlugin().saveDefaultConfig();
@@ -89,6 +103,8 @@ public class Stealsolo extends JavaPlugin {
         paycoinsMessageSender = configuration.getString("paycoins.PayMessageSender", "&5You have paid &6%amount% &5coins to &6%player%&5.");
         paycoinsMessageRecipient = configuration.getString("paycoins.PayMessageRecipient", "&5You have received &6%amount% &5coins from &6%player%&5.");
 
+        damageAreas.clear();
+
         for (String key : Objects.requireNonNull(configuration.getConfigurationSection("DmgBoostAreas")).getKeys(false)) {
             DamageArea area = new DamageArea(
                     configuration.getString("DmgBoostAreas." + key + ".name", "Unnamed Area"),
@@ -108,6 +124,18 @@ public class Stealsolo extends JavaPlugin {
             damageAreas.add(area);
         }
 
+        afkArea = new Area( "Coin Area",
+                new Location(Bukkit.getWorld(configuration.getString("CoinArea.corner1.world", "minecraft:overworld")),
+                        configuration.getInt("CoinArea.corner1.x", 100),
+                        configuration.getInt("CoinArea.corner1.y", 60),
+                        configuration.getInt("CoinArea.corner1.z", 100)),
+
+                new Location(Bukkit.getWorld(configuration.getString("CoinArea.corner2.world", "minecraft:overworld")),
+                        configuration.getInt("CoinArea.corner2.x", 200),
+                        configuration.getInt("CoinArea.corner2.y", 100),
+                        configuration.getInt("CoinArea.corner2.z", 200))
+        );
+
         World world = Bukkit.getWorld(configuration.getString("afk.world", "afk"));
 
         afkLocation = new Location(world,
@@ -124,15 +152,67 @@ public class Stealsolo extends JavaPlugin {
 
         debug = configuration.getBoolean("debug");
 
+        ConfigurationSection quizSection = configuration.getConfigurationSection("CoinArea.Quiz");
+        if (quizSection == null) {
+            plugin.getLogger().warning("[Stealsolo] The configuration section 'CoinArea.Quiz' is missing in config.yml!");
+        } else {
+            int quizCooldown = quizSection.getInt("Cooldown", 120);
+            participationRewardCommand = quizSection.getString("ParticipationReward", "eco give %player% 5");
+            correctAnswerRewardCommand = quizSection.getString("CorrectAnswerReward", "eco give %player% 20");
+            questionMessage = Message.convertStringListToComponentList(quizSection.getStringList("QuestionMessage"));
+            answeredMessage = Message.convertStringListToComponentList(quizSection.getStringList("AnsweredMessage"));
+            unansweredMessage = Message.convertStringListToComponentList(quizSection.getStringList("UnansweredMessage"));
+
+            Quiz.getQuestions().clear();
+
+            for (String key : quizSection.getKeys(false)) {
+                ConfigurationSection questionSection = quizSection.getConfigurationSection(key);
+                if (questionSection == null) continue;
+
+                List<String> answers = new ArrayList<>(questionSection.getStringList("Answers"));
+                answers.replaceAll(String::toLowerCase);
+
+                QuizQuestion question = new QuizQuestion(
+                    key,
+                    questionSection.getString("Question"),
+                    answers
+                );
+
+                Quiz.getQuestions().add(question);
+            }
+
+            Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+                Quiz.randomizeQuestion();
+                Quiz.sendQuestion();
+            }, 0L, quizCooldown * 20L);
+        }
+
         plugin.getLogger().info("Configuration loaded.");
     }
 
     public static void reloadConfiguration() {
+        //PacketEvents.getAPI().terminate();
+        Bukkit.getScheduler().cancelTasks(plugin);
+        /*PacketEvents.setAPI(SpigotPacketEventsBuilder.build(plugin));
+        PacketEvents.getAPI().load();
+
+        PacketEvents.getAPI().getEventManager().registerListener(
+                new PacketEventsPacketListener(), PacketListenerPriority.NORMAL);
+
+        PacketEvents.getAPI().init();*/
+
+
         plugin.reloadConfig();
         initConfig();
     }
 
     public static void initDependencies() {
+        if (Bukkit.getPluginManager().isPluginEnabled("packetevents")) {
+            PacketEvents.getAPI().init();
+        } else {
+            plugin.getLogger().warning("packetevents not found! This might break the plugin.");
+        }
+
         if (Bukkit.getPluginManager().isPluginEnabled("PlayerPoints")) {
             Bukkit.getLogger().info("PlayerPoints found! /paycoins will be enabled.");
             Stealsolo.ppAPI = PlayerPoints.getInstance().getAPI();
@@ -152,6 +232,21 @@ public class Stealsolo extends JavaPlugin {
     }
 
     @Override
+    public void onLoad() {
+        plugin = this;
+
+        if (Bukkit.getPluginManager().isPluginEnabled("packetevents")) {
+            PacketEvents.setAPI(SpigotPacketEventsBuilder.build(plugin));
+            PacketEvents.getAPI().load();
+        } else {
+            plugin.getLogger().warning("packetevents not found! This might break the plugin.");
+        }
+
+        PacketEvents.getAPI().getEventManager().registerListener(
+                new PacketEventsPacketListener(), PacketListenerPriority.NORMAL);
+    }
+
+    @Override
     public void onEnable() {
         long timestamp = System.currentTimeMillis();
         plugin = this;
@@ -166,6 +261,14 @@ public class Stealsolo extends JavaPlugin {
         plugin.getLogger().info("Stealsolo enabled in " + time + "ms");
     }
 
+    @Override
+    public void onDisable() {
+        if (Bukkit.getPluginManager().isPluginEnabled("packetevents")) {
+            PacketEvents.getAPI().terminate();
+        }
+        plugin.getLogger().info("Stealsolo plugin disabled.");
+    }
+
     private void initEvents() {
         getServer().getPluginManager().registerEvents(new onInventoryCloseEvent(), this);
         getServer().getPluginManager().registerEvents(new onInventoryClickEvent(), this);
@@ -173,6 +276,7 @@ public class Stealsolo extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new onDamageEvent(), this);
         getServer().getPluginManager().registerEvents(new onInventoryClickEvent(), this);
         getServer().getPluginManager().registerEvents(new onItemPickupEvent(), this);
+        getServer().getPluginManager().registerEvents(new onAsyncChatEvent(), this);
 
         plugin.getLogger().info("Events registered.");
     }

@@ -2,6 +2,7 @@ package fun.stealsolo.util;
 
 import fun.stealsolo.Stealsolo;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -322,5 +323,36 @@ public class Message {
         return messages.stream()
                 .map(Message::deserializeMiniMessage)
                 .collect(Collectors.toList());
+    }
+
+    private static Component replaceTextRecursive(Component component, String target, String replacement) {
+        if (replacement == null) replacement = "";
+
+        if (component instanceof TextComponent textComponent) {
+            String newContent = textComponent.content().replace(target, replacement);
+            Component newComponent = Component.text(newContent, textComponent.style());
+            for (Component child : textComponent.children()) {
+                newComponent = newComponent.append(replaceTextRecursive(child, target, replacement));
+            }
+            return newComponent;
+        } else {
+            Component newComponent = component;
+            for (Component child : component.children()) {
+                newComponent = newComponent.append(replaceTextRecursive(child, target, replacement));
+            }
+            return newComponent;
+        }
+    }
+
+    public static Component replaceInComponent(Component component, String target, String replacement) {
+        return replaceTextRecursive(component, target, replacement);
+    }
+
+    public static List<Component> replaceInComponentList(List<Component> components, String target, String replacement) {
+        List<Component> replaced = new ArrayList<>();
+        for (Component comp : components) {
+            replaced.add(replaceTextRecursive(comp, target, replacement));
+        }
+        return replaced;
     }
 }

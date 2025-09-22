@@ -64,6 +64,322 @@ afk:
 # don't touch this Raven (will spam the console like a LOT)
 debug: false
 
+CoinArea:
+  corner1:
+    world: "world"
+    x: 100
+    y: 0
+    z: 100
+  corner2:
+    world: "world"
+    x: 200
+    y: 50
+    z: 200
+  Quiz:
+    Cooldown: 120 # in seconds
+    ParticipationReward: "eco give %player% 5"
+    CorrectAnswerReward: "eco give %player% 20"
+    QuestionMessage:
+      - "&5Answer the following question within 2 minutes to win 20 cash!"
+      - "&5%question%"
+    AnsweredMessage:
+      - "&e%player% answered correctly and got the price!" # %answer% can also be used, which will be the first answer of the list
+    UnansweredMessage:
+      - "&5No one answered the question in time. You still got a price for participating!"# %answer% can also be used, which will be the first answer of the list
+
+    Math1:
+      Question: "What is 4 squared?"
+      Answers:
+        - "16"
+        - "sixteen"
+    Math2:
+      Question: "What is 12 times 12?"
+      Answers:
+        - "144"
+        - "one hundred forty four"
+        - "one hundred and forty four"
+    Trivia1:
+      Question: "Who painted the ceiling of the Sistine Chapel?"
+      Answers:
+        - "Michelangelo"
+    Trivia2:
+      Question: "What is the capital city of Mongolia?"
+      Answers:
+        - "Ulaanbaatar"
+        - "Ulan Bator"
+    Trivia3:
+      Question: "Which element has the chemical symbol 'W'?"
+      Answers:
+        - "Tungsten"
+    Trivia4:
+      Question: "Who wrote the novel '1984'?"
+      Answers:
+        - "George Orwell"
+    Trivia5:
+      Question: "What is the largest moon of Saturn?"
+      Answers:
+        - "Titan"
+    Trivia6:
+      Question: "In which year did the Berlin Wall fall?"
+      Answers:
+        - "1989"
+    Trivia7:
+      Question: "What is the square root of 169?"
+      Answers:
+        - "13"
+    Trivia8:
+      Question: "Which country invented paper?"
+      Answers:
+        - "China"
+    Trivia9:
+      Question: "What is the longest river in South America?"
+      Answers:
+        - "Amazon"
+        - "Amazon River"
+    Trivia10:
+      Question: "Who discovered penicillin?"
+      Answers:
+        - "Alexander Fleming"
+    Trivia11:
+      Question: "What is the smallest prime number?"
+      Answers:
+        - "2"
+    Trivia12:
+      Question: "Which planet is known as the Red Planet?"
+      Answers:
+        - "Mars"
+    Trivia13:
+      Question: "Who composed the Four Seasons?"
+      Answers:
+        - "Vivaldi"
+        - "Antonio Vivaldi"
+    Trivia14:
+      Question: "What is the hardest natural substance on Earth?"
+      Answers:
+        - "Diamond"
+    Trivia15:
+      Question: "Which language has the most native speakers worldwide?"
+      Answers:
+        - "Mandarin"
+        - "Mandarin Chinese"
+    Trivia16:
+      Question: "What is the chemical formula for table salt?"
+      Answers:
+        - "NaCl"
+    Trivia17:
+      Question: "Who was the first woman in space?"
+      Answers:
+        - "Valentina Tereshkova"
+    Trivia18:
+      Question: "What is the largest desert in the world?"
+      Answers:
+        - "Antarctica"
+    Trivia19:
+      Question: "Which city hosted the 2008 Summer Olympics?"
+      Answers:
+        - "Beijing"
+    Trivia20:
+      Question: "What is the main ingredient in guacamole?"
+      Answers:
+        - "Avocado"
+    Trivia21:
+      Question: "Who is known as the father of computers?"
+      Answers:
+        - "Charles Babbage"
+    Trivia22:
+      Question: "What is the currency of Poland?"
+      Answers:
+        - "Zloty"
+    Trivia23:
+      Question: "Which Shakespeare play features the character Iago?"
+      Answers:
+        - "Othello"
+    Trivia24:
+      Question: "What is the largest organ in the human body?"
+      Answers:
+        - "Skin"
+    Trivia25:
+      Question: "Which animal is the symbol of the World Wildlife Fund?"
+      Answers:
+        - "Panda"
+        - "Giant Panda"
+    Trivia26:
+      Question: "What is the capital of New Zealand?"
+      Answers:
+        - "Wellington"
+    Trivia27:
+      Question: "Who invented the telephone?"
+      Answers:
+        - "Alexander Graham Bell"
+    Trivia28:
+      Question: "What is the largest planet in our solar system?"
+      Answers:
+        - "Jupiter"
+    Trivia29:
+      Question: "Which country has the most islands?"
+      Answers:
+        - "Sweden"
+    Trivia30:
+      Question: "What is the chemical symbol for gold?"
+      Answers:
+        - "Au"
+    Trivia31:
+      Question: "Who was the first person to reach the South Pole?"
+      Answers:
+        - "Roald Amundsen"
+    Trivia32:
+      Question: "What is the capital of Kazakhstan?"
+      Answers:
+        - "Astana"
+        - "Nur-Sultan"
+    Trivia33:
+      Question: "Which scientist developed the theory of general relativity?"
+      Answers:
+        - "Albert Einstein"
+    Trivia34:
+      Question: "What is the largest internal organ in the human body?"
+      Answers:
+        - "Liver"
+    Trivia35:
+      Question: "Who wrote 'The Divine Comedy'?"
+      Answers:
+        - "Dante Alighieri"
+        - "Dante"
+    Trivia36:
+      Question: "What is the main gas found in the Earth's atmosphere?"
+      Answers:
+        - "Nitrogen"
+    Trivia37:
+      Question: "Which country is known as the Land of the Rising Sun?"
+      Answers:
+        - "Japan"
+    Trivia38:
+      Question: "Who invented the World Wide Web?"
+      Answers:
+        - "Tim Berners-Lee"
+    Trivia39:
+      Question: "What is the smallest country in the world?"
+      Answers:
+        - "Vatican City"
+    Trivia40:
+      Question: "Which artist is famous for the painting 'The Persistence of Memory'?"
+      Answers:
+        - "Salvador Dalí"
+        - "Dali"
+    Trivia41:
+      Question: "What is the chemical symbol for potassium?"
+      Answers:
+        - "K"
+    Trivia42:
+      Question: "Who was the first emperor of China?"
+      Answers:
+        - "Qin Shi Huang"
+    Trivia43:
+      Question: "What is the largest lake in Africa?"
+      Answers:
+        - "Lake Victoria"
+    Trivia44:
+      Question: "Which planet has the most moons?"
+      Answers:
+        - "Saturn"
+    Trivia45:
+      Question: "Who wrote the play 'Hamlet'?"
+      Answers:
+        - "William Shakespeare"
+        - "Shakespeare"
+    Trivia46:
+      Question: "What is the capital of Canada?"
+      Answers:
+        - "Ottawa"
+    Trivia47:
+      Question: "Which element has the atomic number 1?"
+      Answers:
+        - "Hydrogen"
+    Trivia48:
+      Question: "Who is the Greek god of the sea?"
+      Answers:
+        - "Poseidon"
+    Trivia49:
+      Question: "What is the largest species of shark?"
+      Answers:
+        - "Whale shark"
+    Trivia50:
+      Question: "Which country hosted the first modern Olympic Games?"
+      Answers:
+        - "Greece"
+    Trivia51:
+      Question: "What is the capital of Switzerland?"
+      Answers:
+        - "Bern"
+    Trivia52:
+      Question: "Who discovered the law of gravity?"
+      Answers:
+        - "Isaac Newton"
+        - "Newton"
+    Trivia53:
+      Question: "What is the main language spoken in Brazil?"
+      Answers:
+        - "Portuguese"
+    Trivia54:
+      Question: "Which planet is closest to the sun?"
+      Answers:
+        - "Mercury"
+    Trivia55:
+      Question: "Who wrote 'Pride and Prejudice'?"
+      Answers:
+        - "Jane Austen"
+    Trivia56:
+      Question: "What is the largest mammal in the world?"
+      Answers:
+        - "Blue whale"
+    Trivia57:
+      Question: "Which country is home to the ancient city of Petra?"
+      Answers:
+        - "Jordan"
+    Trivia58:
+      Question: "Who was the first man to walk on the moon?"
+      Answers:
+        - "Neil Armstrong"
+    Trivia59:
+      Question: "What is the capital of Finland?"
+      Answers:
+        - "Helsinki"
+    Trivia60:
+      Question: "Which element has the chemical symbol 'Ag'?"
+      Answers:
+        - "Silver"
+    Duck:
+      Question: "Are ducks cute?"
+      Answers:
+        - "yes"
+        - "of course"
+        - "absolutely"
+        - "definitely"
+        - "yep"
+        - "yeah"
+        - "yup"
+        - "sure"
+        - "affirmative"
+        - "indeed"
+        - "certainly"
+        - "without a doubt"
+        - "you bet"
+        - "for sure"
+        - "totally"
+        - "undoubtedly"
+        - "positively"
+        - "gladly"
+        - "sure thing"
+        - "aye"
+        - "roger that"
+        - "10-4"
+        - "aye aye"
+        - "yessir"
+        - "yessiree"
+        - "yes sir"
+        - "yes ma'am"
+
+
 antipickup:
   EnabledMessage: "&5Anti-pickup is now enabled."
   DisabledMessage: "&5Anti-pickup is now disabled."
