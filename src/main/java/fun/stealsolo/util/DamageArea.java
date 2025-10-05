@@ -6,6 +6,10 @@ import org.bukkit.Location;
 public record DamageArea(String name, Location corner1, Location corner2, double damageMultiplier) {
 
     public boolean isInArea(Location location) {
+        if (location == null) {
+            return false;
+        }
+
         if (!corner1.getWorld().equals(corner2.getWorld())) {
             Stealsolo.getPlugin().getLogger().severe("Damage area " + name + " has different worlds!");
             return false;

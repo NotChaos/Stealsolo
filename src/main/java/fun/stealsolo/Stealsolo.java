@@ -16,6 +16,9 @@ import org.black_ixx.playerpoints.PlayerPointsAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -81,6 +84,8 @@ public class Stealsolo extends JavaPlugin {
     private static List<Component> answeredMessage;
     @Getter
     private static List<Component> unansweredMessage;
+    private static int quizCooldown = 120;
+    private static int quizProgression = 0;
 
     private static void initConfig() {
         getPlugin().saveDefaultConfig();
@@ -124,7 +129,7 @@ public class Stealsolo extends JavaPlugin {
             damageAreas.add(area);
         }
 
-        afkArea = new Area( "Coin Area",
+        afkArea = new Area("Coin Area",
                 new Location(Bukkit.getWorld(configuration.getString("CoinArea.corner1.world", "minecraft:overworld")),
                         configuration.getInt("CoinArea.corner1.x", 100),
                         configuration.getInt("CoinArea.corner1.y", 60),
@@ -156,7 +161,7 @@ public class Stealsolo extends JavaPlugin {
         if (quizSection == null) {
             plugin.getLogger().warning("[Stealsolo] The configuration section 'CoinArea.Quiz' is missing in config.yml!");
         } else {
-            int quizCooldown = quizSection.getInt("Cooldown", 120);
+            quizCooldown = quizSection.getInt("Cooldown", 120);
             participationRewardCommand = quizSection.getString("ParticipationReward", "eco give %player% 5");
             correctAnswerRewardCommand = quizSection.getString("CorrectAnswerReward", "eco give %player% 20");
             questionMessage = Message.convertStringListToComponentList(quizSection.getStringList("QuestionMessage"));
@@ -173,9 +178,9 @@ public class Stealsolo extends JavaPlugin {
                 answers.replaceAll(String::toLowerCase);
 
                 QuizQuestion question = new QuizQuestion(
-                    key,
-                    questionSection.getString("Question"),
-                    answers
+                        key,
+                        questionSection.getString("Question"),
+                        answers
                 );
 
                 Quiz.getQuestions().add(question);
@@ -204,6 +209,7 @@ public class Stealsolo extends JavaPlugin {
 
         plugin.reloadConfig();
         initConfig();
+        initLoops();
     }
 
     public static void initDependencies() {
@@ -256,6 +262,7 @@ public class Stealsolo extends JavaPlugin {
         initEvents();
         initCommands();
         initTabCompleters();
+        initLoops();
 
         long time = System.currentTimeMillis() - timestamp;
         plugin.getLogger().info("Stealsolo enabled in " + time + "ms");
@@ -313,5 +320,37 @@ public class Stealsolo extends JavaPlugin {
         Objects.requireNonNull(getCommand("antipickup")).setTabCompleter(new EmptyTC());
 
         plugin.getLogger().info("Tab completers registered.");
+    }
+
+    private static void initLoops() {
+        Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+            if (quizProgression >= quizCooldown) {
+                quizProgression = 0;
+                return;
+            }
+
+            quizProgression++;
+            int remaining = quizCooldown - quizProgression;
+            if (remaining < 0) remaining = 0;
+
+            String title = Message.convertHexToLegacy(configuration.getString("CoinArea.Quiz.BossBar", "Next question in %time%")
+                    .replace("%time%", String.valueOf(remaining)));
+            BossBar bossBar = Bukkit.createBossBar(title, BarColor.YELLOW, BarStyle.SEGMENTED_20);
+
+            float progress = 1f - (quizProgression / (float) quizCooldown);
+            if (progress < 0f) progress = 0f;
+            if (progress > 1f) progress = 1f;
+            bossBar.setProgress(progress);
+            bossBar.setVisible(true);
+
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (afkArea.isInArea(player.getLocation())) {
+                    bossBar.addPlayer(player);
+                    Bukkit.getScheduler().runTaskLater(plugin, () -> bossBar.removePlayer(player), 20L);
+                }
+            }
+        }, 0L, 20L);
+
+        plugin.getLogger().info("Loops initialized.");
     }
 }

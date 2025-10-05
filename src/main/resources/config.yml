@@ -77,6 +77,7 @@ CoinArea:
     z: 200
   Quiz:
     Cooldown: 120 # in seconds
+    BossBar: '&4Time left to answer: %time%'
     ParticipationReward: "eco give %player% 5"
     CorrectAnswerReward: "eco give %player% 20"
     QuestionMessage:
