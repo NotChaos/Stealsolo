@@ -1,9 +1,8 @@
 package fun.stealsolo.commands;
 
 import com.onarandombox.MultiverseCore.MultiverseCore;
-import com.onarandombox.MultiverseCore.api.MVWorldManager;
 import fun.stealsolo.Stealsolo;
-import fun.stealsolo.util.Message;
+import com.duckydeveloper.util.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

@@ -1,6 +1,6 @@
 package fun.stealsolo.events;
 
-import fun.stealsolo.util.Message;
+import com.duckydeveloper.util.Message;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;

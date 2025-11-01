@@ -1,7 +1,7 @@
 package fun.stealsolo.commands;
 
 import fun.stealsolo.Stealsolo;
-import fun.stealsolo.util.Message;
+import com.duckydeveloper.util.Message;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

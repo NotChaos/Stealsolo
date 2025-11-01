@@ -381,6 +381,21 @@ CoinArea:
         - "yes ma'am"
 
 
+StatsGUI:
+  Title: "Statistics" # %player% is the placeholder for the players name
+  Rows: 3
+  DmgStat:
+    Slot: 11
+    Material: DIAMOND_SWORD
+    Name: '&5&lDamage Stats from %player_name%'
+    Lore:
+      - '&7Total Damage Dealt: &a%total_damage_dealt%'
+      - '&7Total Damage Taken: &a%total_damage_taken%'
+      - '&7Highest Damage in a Single Hit: &a%highest_damage_single_hit%'
+      - '&7Total Critical Hits: &a%total_critical_hits_PLAYER%'
+      - '&7Total Melee Attacks: &a%player_last_join_date%'
+
+
 antipickup:
   EnabledMessage: "&5Anti-pickup is now enabled."
   DisabledMessage: "&5Anti-pickup is now disabled."

@@ -1,5 +1,8 @@
 package fun.stealsolo;
 
+import com.duckydeveloper.DuckAPI;
+import com.duckydeveloper.util.GUI;
+import com.duckydeveloper.util.Message;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import fun.stealsolo.Packetevents.PacketEventsPacketListener;
@@ -31,7 +34,7 @@ import java.util.*;
 public class Stealsolo extends JavaPlugin {
 
     @Getter
-    private static Plugin plugin;
+    private static JavaPlugin plugin;
     @Getter
     private static Configuration configuration;
     @Getter
@@ -86,6 +89,8 @@ public class Stealsolo extends JavaPlugin {
     private static List<Component> unansweredMessage;
     private static int quizCooldown = 120;
     private static int quizProgression = 0;
+    @Getter
+    private static GUI statisticsGUI;
 
     private static void initConfig() {
         getPlugin().saveDefaultConfig();
@@ -192,6 +197,13 @@ public class Stealsolo extends JavaPlugin {
             }, 0L, quizCooldown * 20L);
         }
 
+        DuckAPI.DuckAPIBuilder duckAPIBuilder = new DuckAPI.DuckAPIBuilder();
+        duckAPIBuilder.setPlugin(plugin);
+        duckAPIBuilder.setDebug(debug);
+        DuckAPI.init(duckAPIBuilder);
+
+        statisticsGUI = GUI.parseConfig("StatsGUI");
+
         plugin.getLogger().info("Configuration loaded.");
     }
 
@@ -244,12 +256,12 @@ public class Stealsolo extends JavaPlugin {
         if (Bukkit.getPluginManager().isPluginEnabled("packetevents")) {
             PacketEvents.setAPI(SpigotPacketEventsBuilder.build(plugin));
             PacketEvents.getAPI().load();
+
+            PacketEvents.getAPI().getEventManager().registerListener(
+                    new PacketEventsPacketListener(), PacketListenerPriority.NORMAL);
         } else {
             plugin.getLogger().warning("packetevents not found! This might break the plugin.");
         }
-
-        PacketEvents.getAPI().getEventManager().registerListener(
-                new PacketEventsPacketListener(), PacketListenerPriority.NORMAL);
     }
 
     @Override
@@ -299,8 +311,9 @@ public class Stealsolo extends JavaPlugin {
         Objects.requireNonNull(getCommand("trash")).setExecutor(new TrashCommand());
         Objects.requireNonNull(getCommand("media")).setExecutor(new MediaCommand());
         Objects.requireNonNull(getCommand("ping")).setExecutor(new PingCommand());
-        Objects.requireNonNull(getCommand("afk")).setExecutor(new AfkCommand());
+        Objects.requireNonNull(getCommand("coinarea")).setExecutor(new AfkCommand());
         Objects.requireNonNull(getCommand("antipickup")).setExecutor(new AntiPickupCommand());
+        Objects.requireNonNull(getCommand("statistics")).setExecutor(new StatisticsCommand());
 
         plugin.getLogger().info("Commands registered.");
     }
@@ -316,15 +329,16 @@ public class Stealsolo extends JavaPlugin {
         Objects.requireNonNull(getCommand("trash")).setTabCompleter(new EmptyTC());
         Objects.requireNonNull(getCommand("media")).setTabCompleter(new MediaTC());
         Objects.requireNonNull(getCommand("ping")).setTabCompleter(new SimpleTC());
-        Objects.requireNonNull(getCommand("afk")).setTabCompleter(new EmptyTC());
+        Objects.requireNonNull(getCommand("coinarea")).setTabCompleter(new EmptyTC());
         Objects.requireNonNull(getCommand("antipickup")).setTabCompleter(new EmptyTC());
+        Objects.requireNonNull(getCommand("statistics")).setTabCompleter(new SimpleTC());
 
         plugin.getLogger().info("Tab completers registered.");
     }
 
     private static void initLoops() {
         Bukkit.getScheduler().runTaskTimer(plugin, () -> {
-            if (quizProgression >= quizCooldown) {
+            if (quizProgression + 1 >= quizCooldown) {
                 quizProgression = 0;
                 return;
             }
@@ -333,7 +347,7 @@ public class Stealsolo extends JavaPlugin {
             int remaining = quizCooldown - quizProgression;
             if (remaining < 0) remaining = 0;
 
-            String title = Message.convertHexToLegacy(configuration.getString("CoinArea.Quiz.BossBar", "Next question in %time%")
+            String title = Message.convertStringToLegacy(configuration.getString("CoinArea.Quiz.BossBar", "Next question in %time%")
                     .replace("%time%", String.valueOf(remaining)));
             BossBar bossBar = Bukkit.createBossBar(title, BarColor.YELLOW, BarStyle.SEGMENTED_20);
 

@@ -1,7 +1,7 @@
 package fun.stealsolo.commands;
 
 import fun.stealsolo.Stealsolo;
-import fun.stealsolo.util.Message;
+import com.duckydeveloper.util.Message;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
