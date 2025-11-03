@@ -26,7 +26,7 @@ import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
@@ -91,6 +91,10 @@ public class Stealsolo extends JavaPlugin {
     private static int quizProgression = 0;
     @Getter
     private static GUI statisticsGUI;
+    @Getter
+    private static String deathPenaltyCommand;
+    @Getter
+    private static String killRewardCommand;
 
     private static void initConfig() {
         getPlugin().saveDefaultConfig();
@@ -200,9 +204,13 @@ public class Stealsolo extends JavaPlugin {
         DuckAPI.DuckAPIBuilder duckAPIBuilder = new DuckAPI.DuckAPIBuilder();
         duckAPIBuilder.setPlugin(plugin);
         duckAPIBuilder.setDebug(debug);
+        duckAPIBuilder.setEnableHeadAPIIntegration(true);
         DuckAPI.init(duckAPIBuilder);
 
         statisticsGUI = GUI.parseConfig("StatsGUI");
+
+        deathPenaltyCommand = configuration.getString("DeathPenalty.Command", "eco take %player% 10");
+        killRewardCommand = configuration.getString("KillReward.Command", "eco give %player% 15");
 
         plugin.getLogger().info("Configuration loaded.");
     }
@@ -289,13 +297,14 @@ public class Stealsolo extends JavaPlugin {
     }
 
     private void initEvents() {
-        getServer().getPluginManager().registerEvents(new onInventoryCloseEvent(), this);
-        getServer().getPluginManager().registerEvents(new onInventoryClickEvent(), this);
-        getServer().getPluginManager().registerEvents(new onPlayerQuitEvent(), this);
-        getServer().getPluginManager().registerEvents(new onDamageEvent(), this);
-        getServer().getPluginManager().registerEvents(new onInventoryClickEvent(), this);
-        getServer().getPluginManager().registerEvents(new onItemPickupEvent(), this);
-        getServer().getPluginManager().registerEvents(new onAsyncChatEvent(), this);
+        PluginManager pm = getServer().getPluginManager();
+        pm.registerEvents(new onInventoryCloseEvent(), this);
+        pm.registerEvents(new onPlayerQuitEvent(), this);
+        pm.registerEvents(new onDamageEvent(), this);
+        pm.registerEvents(new onInventoryClickEvent(), this);
+        pm.registerEvents(new onItemPickupEvent(), this);
+        pm.registerEvents(new onAsyncChatEvent(), this);
+        pm.registerEvents(new onPlayerDeathEvent(this, debug), this);
 
         plugin.getLogger().info("Events registered.");
     }

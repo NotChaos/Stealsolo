@@ -382,7 +382,7 @@ CoinArea:
 
 
 StatsGUI:
-  Title: "Statistics" # %player% is the placeholder for the players name
+  Title: "Statistics"
   Rows: 3
   DmgStat:
     Slot: 11
@@ -395,6 +395,9 @@ StatsGUI:
       - '&7Total Critical Hits: &a%total_critical_hits_PLAYER%'
       - '&7Total Melee Attacks: &a%player_last_join_date%'
 
+DeathPenalty:
+  PenaltyCommand: 'eco take %player% 10'
+  RewardCommand: 'eco give %player% 5'
 
 antipickup:
   EnabledMessage: "&5Anti-pickup is now enabled."

@@ -65,7 +65,6 @@ public class StatisticsCommand implements CommandExecutor {
             ItemMeta meta = item.getItemMeta();
             try {
                 if (meta.getItemName() != null && !meta.getItemName().isBlank()) {
-                    Stealsolo.getPlugin().getLogger().info("Debug: slot " + i + " original displayName=" + meta.getItemName());
                     meta.setItemName(PlaceholderAPI.setPlaceholders(target, meta.getItemName()));
                 }
 

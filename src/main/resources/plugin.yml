@@ -1,10 +1,10 @@
 name: StealSolo
 author: Chaos
 description: StealSolo plugin
-version: '1.2.0'
+version: '1.3.0'
 main: fun.stealsolo.Stealsolo
 api-version: '1.21'
-softdepend: ["PlayerPoints", "PlaceholderAPI", "packetevents"]
+softdepend: ["PlayerPoints", "PlaceholderAPI", "packetevents", "HeadDB"]
 commands:
   nightvision:
     permission: stealsolo.nightvision
