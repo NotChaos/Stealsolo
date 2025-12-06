@@ -398,6 +398,10 @@ StatsGUI:
 DeathPenalty:
   PenaltyCommand: 'eco take %player% 10'
   RewardCommand: 'eco give %player% 5'
+  KillStreakMessage: "&5%player% is on a killstreak of %killstreak% kills!"
+  KillStreakLostMessage: "&5%player% has lost his killstreak of %killstreak%!"
+  KillStreakThreshold: 5 # that means that every after 5 kills, the message will be broadcasted
+  KillStreakData:
 
 antipickup:
   EnabledMessage: "&5Anti-pickup is now enabled."

@@ -5,6 +5,7 @@ import com.duckydeveloper.util.Message;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 public class PluginCommand implements CommandExecutor {
@@ -22,7 +23,19 @@ public class PluginCommand implements CommandExecutor {
                 Message.successful(sender, "Plugin reloaded.");
                 yield true;
             }
-            default -> false;
+            case "setkillstreak" -> {
+                if (!(sender instanceof Player player)) {
+                    Message.restricted(sender, "Only players can use this command.");
+                    yield false;
+                }
+                Stealsolo.setKillstreak(player.getUniqueId(), 10);
+                Message.successful(sender, "Killstreak has been set to 10.");
+                yield true;
+            }
+            default -> {
+                Message.invalid(sender, "Usage: /stealsolo <reload>");
+                yield false;
+            }
         };
     }
 }

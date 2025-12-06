@@ -14,8 +14,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Method;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -33,8 +33,8 @@ public class StatisticsCommand implements CommandExecutor {
             return false;
         }
 
-        Inventory gui = Stealsolo.getStatisticsGUI() == null ? null : Stealsolo.getStatisticsGUI().getInventory();
-        if (gui == null) {
+        Inventory template = Stealsolo.getStatisticsGUI() == null ? null : Stealsolo.getStatisticsGUI().getInventory();
+        if (template == null) {
             Stealsolo.getPlugin().getLogger().severe("Debug: statistics GUI is null");
             Message.invalid(sender, "GUI not available.");
             return false;
@@ -45,13 +45,48 @@ public class StatisticsCommand implements CommandExecutor {
             target = Bukkit.getOfflinePlayer(player.getUniqueId());
         } else {
             target = Bukkit.getOfflinePlayer(args[0]);
-            if (target == null || (!target.hasPlayedBefore() && !target.isOnline())) {
+            if (!target.hasPlayedBefore() && !target.isOnline()) {
                 Message.invalid(sender, "Player " + args[0] + " not found.");
                 return false;
             }
         }
 
-        ItemStack[] contents = gui.getContents();
+        String title = null;
+        try {
+            Object holder = template.getHolder();
+            if (holder != null) {
+                try {
+                    Method m = holder.getClass().getMethod("getTitle");
+                    Object t = m.invoke(holder);
+                    if (t instanceof String) title = (String) t;
+                } catch (NoSuchMethodException ignored) {
+                }
+                if (title == null) {
+                    try {
+                        Method m = holder.getClass().getMethod("getName");
+                        Object t = m.invoke(holder);
+                        if (t instanceof String) title = (String) t;
+                    } catch (NoSuchMethodException ignored) {
+                    }
+                }
+                if (title == null) {
+                    try {
+                        Method m = holder.getClass().getMethod("getDisplayName");
+                        Object t = m.invoke(holder);
+                        if (t instanceof String) title = (String) t;
+                    } catch (NoSuchMethodException ignored) {
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Stealsolo.getPlugin().getLogger().fine("Could not determine GUI title via reflection: " + e);
+        }
+
+        if (title == null) title = "Statistics";
+
+        Inventory gui = Bukkit.createInventory(null, template.getSize(), title);
+
+        ItemStack[] contents = template.getContents();
 
         IntStream.range(0, contents.length).forEach(i -> {
             ItemStack item = contents[i];
@@ -60,23 +95,31 @@ public class StatisticsCommand implements CommandExecutor {
                 return;
             }
 
-            if (!item.hasItemMeta()) return;
+            ItemStack clone = item.clone();
 
-            ItemMeta meta = item.getItemMeta();
+            if (!clone.hasItemMeta()) {
+                gui.setItem(i, clone);
+                return;
+            }
+
+            ItemMeta meta = clone.getItemMeta();
             try {
-                if (meta.getItemName() != null && !meta.getItemName().isBlank()) {
-                    meta.setItemName(PlaceholderAPI.setPlaceholders(target, meta.getItemName()));
+                if (meta.getDisplayName() != null && !meta.getDisplayName().isBlank()) {
+                    meta.setDisplayName(PlaceholderAPI.setPlaceholders(target, meta.getDisplayName()));
                 }
 
                 if (meta.hasLore()) {
-                    List<String> newLore = meta.getLore().stream()
-                            .map(line -> PlaceholderAPI.setPlaceholders(target, line))
-                            .collect(Collectors.toList());
-                    meta.setLore(newLore);
+                    List<String> oldLore = meta.getLore();
+                    if (oldLore != null) {
+                        List<String> newLore = oldLore.stream()
+                                .map(line -> PlaceholderAPI.setPlaceholders(target, line))
+                                .collect(Collectors.toList());
+                        meta.setLore(newLore);
+                    }
                 }
 
-                item.setItemMeta(meta);
-                gui.setItem(i, item);
+                clone.setItemMeta(meta);
+                gui.setItem(i, clone);
             } catch (Exception e) {
                 Stealsolo.getPlugin().getLogger().severe("Error while applying placeholders for slot " + i + "\n" + e);
             }

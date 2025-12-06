@@ -29,6 +29,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.sql.Array;
 import java.util.*;
 
 public class Stealsolo extends JavaPlugin {
@@ -95,9 +96,14 @@ public class Stealsolo extends JavaPlugin {
     private static String deathPenaltyCommand;
     @Getter
     private static String killRewardCommand;
+    @Getter
+    private static final HashMap<UUID, Integer> killstreaks = new HashMap<>();
+    private static final ArrayList<String> killstreakData = new ArrayList<>();
 
     private static void initConfig() {
-        getPlugin().saveDefaultConfig();
+        plugin.getLogger().info("Loading Stealsolo configuration...");
+
+        plugin.saveDefaultConfig();
         Stealsolo.configuration = getPlugin().getConfig();
 
         FileConfiguration bukkitConfig = Bukkit.getServer().spigot().getConfig();
@@ -201,21 +207,82 @@ public class Stealsolo extends JavaPlugin {
             }, 0L, quizCooldown * 20L);
         }
 
+        plugin.getLogger().info("Quiz questions loaded: " + Quiz.getQuestions().size());
+
+
         DuckAPI.DuckAPIBuilder duckAPIBuilder = new DuckAPI.DuckAPIBuilder();
         duckAPIBuilder.setPlugin(plugin);
         duckAPIBuilder.setDebug(debug);
         duckAPIBuilder.setEnableHeadAPIIntegration(true);
         DuckAPI.init(duckAPIBuilder);
 
-        statisticsGUI = GUI.parseConfig("StatsGUI");
+        plugin.getLogger().info("Duck API initialized!");
+
+        statisticsGUI = GUI.parseConfig("StatsGUI").join();
+
+        plugin.getLogger().info("Statistics GUI loaded.");
 
         deathPenaltyCommand = configuration.getString("DeathPenalty.Command", "eco take %player% 10");
         killRewardCommand = configuration.getString("KillReward.Command", "eco give %player% 15");
+        killstreakData.clear();
+        List<String> stored = configuration.getStringList("DeathPenalty.KillStreakData");
+        killstreakData.addAll(stored);
+
+        for (String data : stored) {
+            String[] parts = data.split(":", 2);
+            if (parts.length != 2) continue;
+
+            try {
+                UUID playerUUID = UUID.fromString(parts[0]);
+                int streak = Integer.parseInt(parts[1]);
+                killstreaks.put(playerUUID, streak);
+            } catch (IllegalArgumentException e) {
+                plugin.getLogger().warning("[Stealsolo] Ignoring invalid killstreak entry: " + data);
+            }
+        }
 
         plugin.getLogger().info("Configuration loaded.");
     }
 
+    public static void setKillstreak(UUID playerUUID, int killstreak) {
+        killstreaks.put(playerUUID, killstreak);
+
+        boolean updated = false;
+        for (int i = 0; i < killstreakData.size(); i++) {
+            String data = killstreakData.get(i);
+            String[] parts = data.split(":", 2);
+            if (parts.length != 2) continue;
+
+            try {
+                UUID searchingUUID = UUID.fromString(parts[0]);
+                if (searchingUUID.equals(playerUUID)) {
+                    killstreakData.set(i, playerUUID.toString() + ":" + killstreak);
+                    updated = true;
+                    break;
+                }
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+
+        if (!updated) {
+            killstreakData.add(playerUUID.toString() + ":" + killstreak);
+        }
+
+        configuration.set("DeathPenalty.KillStreakData", new ArrayList<>(killstreakData));
+        plugin.saveConfig();
+    }
+
+    public static int getKillstreak(UUID playerUUID) {
+        if (killstreaks.get(playerUUID) == null) {
+            return 0;
+        }
+
+        return killstreaks.get(playerUUID);
+    }
+
     public static void reloadConfiguration() {
+        plugin.getLogger().info("Reloading Stealsolo configuration...");
+
         //PacketEvents.getAPI().terminate();
         Bukkit.getScheduler().cancelTasks(plugin);
         /*PacketEvents.setAPI(SpigotPacketEventsBuilder.build(plugin));
@@ -226,10 +293,13 @@ public class Stealsolo extends JavaPlugin {
 
         PacketEvents.getAPI().init();*/
 
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            plugin.reloadConfig();
+            initConfig();
+            initLoops();
+        });
 
-        plugin.reloadConfig();
-        initConfig();
-        initLoops();
+        plugin.getLogger().info("Stealsolo configuration reloaded.");
     }
 
     public static void initDependencies() {
@@ -261,15 +331,11 @@ public class Stealsolo extends JavaPlugin {
     public void onLoad() {
         plugin = this;
 
-        if (Bukkit.getPluginManager().isPluginEnabled("packetevents")) {
-            PacketEvents.setAPI(SpigotPacketEventsBuilder.build(plugin));
-            PacketEvents.getAPI().load();
+        PacketEvents.setAPI(SpigotPacketEventsBuilder.build(plugin));
+        PacketEvents.getAPI().load();
 
-            PacketEvents.getAPI().getEventManager().registerListener(
-                    new PacketEventsPacketListener(), PacketListenerPriority.NORMAL);
-        } else {
-            plugin.getLogger().warning("packetevents not found! This might break the plugin.");
-        }
+        PacketEvents.getAPI().getEventManager().registerListener(
+                new PacketEventsPacketListener(), PacketListenerPriority.NORMAL);
     }
 
     @Override
@@ -278,11 +344,14 @@ public class Stealsolo extends JavaPlugin {
         plugin = this;
 
         initDependencies();
-        initConfig();
-        initEvents();
-        initCommands();
-        initTabCompleters();
-        initLoops();
+
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            initConfig();
+            initEvents();
+            initCommands();
+            initTabCompleters();
+            initLoops();
+        });
 
         long time = System.currentTimeMillis() - timestamp;
         plugin.getLogger().info("Stealsolo enabled in " + time + "ms");
