@@ -14,42 +14,29 @@ media:
   UploadHoverMessage: "&5Click to watch %player% at %link%!"
   # only shows when the mouse is over the chat message
 
+1v1:
+  Spawn:
+    world: "world"
+    x: 0
+    y: 100
+    z: 0
+  Area1:
+    world: "world"
+    x: 100
+    y: 0
+    z: 100
+  Area2:
+    world: "world"
+    x: 200
+    y: 0
+    z: 200
+
 paycoins:
     # %player% = command sender
     # %amount% = amount
     # %target% = recipient
   PayMessageSender: "&5You have paid %amount% coins to %target%."
   PayMessageRecipient: "&5You have received %amount% coins from %player%."
-
-DmgBoostAreas:
-  moshpit:
-    world: "minecraft:overworld"
-    corner1:
-      x: 608
-      y: 82
-      z: -740
-      # x, y, z, world of the first corner of the moshpit
-    corner2:
-      x: 622
-      y: 92
-      z: -754
-      # x, y, z, world of the moshpit location
-    dmg-multiplier: 2
-    # damage multiplier for the moshpit
-  koth:
-    world: "minecraft:overworld"
-    corner1:
-      x: 608
-      y: 82
-      z: -740
-      # x, y, z, world of the first corner of the koth
-    corner2:
-      x: 622
-      y: 92
-      z: -754
-      # x, y, z, world of the koth location
-    dmg-multiplier: 1.5
-    # damage multiplier for the koth
 
 PingMessageSelf: "&5Your ping is &a%ping%ms&5."
 PingMessageOthers: "&7The ping of %target% is: &a%ping%&7ms"
@@ -394,6 +381,28 @@ StatsGUI:
       - '&7Highest Damage in a Single Hit: &a%highest_damage_single_hit%'
       - '&7Total Critical Hits: &a%total_critical_hits_PLAYER%'
       - '&7Total Melee Attacks: &a%player_last_join_date%'
+
+KeepInventory:
+  DigitalCurrency:
+    Enabled: true
+    Name: "Keepinventory Coins"
+    Symbol: "KIC"
+    Max: 3
+  Item:
+    Material: PAPER
+    Name: '&5&lKeep Inventory Token'
+    Lore:
+      - '&7Keep your inventory after death by using this token!'
+  Respawn:
+    # the player will get healed instead if true
+    Blocked: true
+    HealPercent: 50
+    Sound: entity.zombie.break_wooden_door
+    Particles:
+      - # format: particle_name, count, offsetX, offsetY, offsetZ, speed
+      - crimson_spore:100:0:1:0:1
+      - copper_fire_flame:100:0:1:0:0.1
+  Data:
 
 DeathPenalty:
   PenaltyCommand: 'eco take %player% 10'

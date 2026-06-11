@@ -11,12 +11,22 @@ public record Area(String name, Location corner1, Location corner2) {
         }
 
         if (corner1 == null || corner2 == null) {
-            Stealsolo.getPlugin().getLogger().severe("The " + name + " area is not properly defined!");
+            Stealsolo.getPlugin().getLogger().severe("The " + name + " area is not properly defined");
+            return false;
+        }
+
+        if (location.getWorld() == null) {
+            Stealsolo.getPlugin().getLogger().severe("The location world is null");
+            return false;
+        }
+
+        if (corner1.getWorld() == null || corner2.getWorld() == null) {
+            Stealsolo.getPlugin().getLogger().severe("The " + name + " area has a corner with a null world");
             return false;
         }
 
         if (!corner1.getWorld().equals(corner2.getWorld())) {
-            Stealsolo.getPlugin().getLogger().severe("The " + name + " area has different worlds!");
+            Stealsolo.getPlugin().getLogger().severe("The " + name + " area has different worlds");
             return false;
         }
 

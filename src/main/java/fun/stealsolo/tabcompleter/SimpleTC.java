@@ -15,11 +15,14 @@ public class SimpleTC implements TabCompleter {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, @NotNull String[] args) {
         switch (args.length) {
-            default -> {
+            case 1 -> {
                 return Bukkit.getOnlinePlayers().stream()
                         .map(player -> player.getName())
                         .filter(name -> name.toLowerCase().startsWith(args[args.length - 1].toLowerCase()))
                         .toList();
+            }
+            default -> {
+                return null;
             }
         }
     }

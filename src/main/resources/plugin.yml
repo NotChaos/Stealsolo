@@ -1,11 +1,18 @@
 name: StealSolo
 author: Chaos
 description: StealSolo plugin
-version: '1.5.2'
+version: '1.5.4'
 main: fun.stealsolo.Stealsolo
 api-version: '1.21'
-softdepend: ["PlayerPoints", "PlaceholderAPI", "packetevents", "HeadDatabase"]
+softdepend: ["PlayerPoints", "PlaceholderAPI", "packetevents", "HeadDatabase", "DeluxeCombat", "WorldGuard"]
 commands:
+  givekeepinventoryitem:
+    description: Give an item that would normally be lost on death
+    permission: stealsolo.givekeepinventoryitem
+    aliases:
+      - keepinventoryitem
+      - keepinv
+      - keepinventorycurrency
   nightvision:
     permission: stealsolo.nightvision
     description: Toggle nightvision
@@ -40,6 +47,26 @@ commands:
       - statistic
       - playerstats
       - playerstatistics
+  acceptbattle:
+    description: Start a battle
+    aliases:
+      - accept1v1
+      - 1v1accept
+    permission: stealsolo.startbattle
+  requestbattle:
+    description: Request a battle with another player
+    aliases:
+      - 1v1
+      - 1v1request
+      - request1v1
+    permission: stealsolo.startbattle
+  denybattle:
+    description: Deny a battle request
+    aliases:
+      - deny1v1
+      - 1v1deny
+    permission: stealsolo.startbattle
+
 
 permissions:
   stealsolo.*:
@@ -52,6 +79,8 @@ permissions:
       - stealsolo.ping
       - stealsolo.afk
       - stealsolo.antipickup
+      - stealsolo.givekeepinventoryitem
+      - stealsolo.startbattle
   stealsolo.media:
     default: op
   stealsolo.trash:
@@ -67,4 +96,8 @@ permissions:
   stealsolo.afk:
     default: true
   stealsolo.antipickup:
+    default: true
+  stealsol.givekeepinventoryitem:
+    default: op
+  stealsolo.startbattle:
     default: true

@@ -22,21 +22,33 @@ public class PacketEventsPacketListener implements PacketListener {
             return;
         }
 
-        if (!Stealsolo.getAfkArea().isInArea(player.getLocation())) {
+        if (player.getLocation() == null) {
             return;
         }
 
-        PacketType.Play.Server[] list = PacketType.Play.Server.values();
-        list = Arrays.stream(list)
-                .filter(packetType -> packetType.name().contains("ENTITY"))
-                .toArray(PacketType.Play.Server[]::new);
+        if (player.getWorld() == null) {
+            return;
+        }
 
-        List<PacketType.Play.Server> blockedPackets = new ArrayList<>(Arrays.asList(list));
-        blockedPackets.add(PacketType.Play.Server.SPAWN_PLAYER);
+        try {
 
-        if (blockedPackets.contains(event.getPacketType())) {
-            //Stealsolo.getPlugin().getLogger().info("Cancelling movement packet from player " + player.getName() + " in AFK area.");
-            event.setCancelled(true);
+            if (Stealsolo.getAfkArea() != null && !Stealsolo.getAfkArea().isInArea(player.getLocation())) {
+                return;
+            }
+
+            PacketType.Play.Server[] list = PacketType.Play.Server.values();
+            list = Arrays.stream(list)
+                    .filter(packetType -> packetType.name().contains("ENTITY"))
+                    .toArray(PacketType.Play.Server[]::new);
+
+            List<PacketType.Play.Server> blockedPackets = new ArrayList<>(Arrays.asList(list));
+            blockedPackets.add(PacketType.Play.Server.SPAWN_PLAYER);
+
+            if (blockedPackets.contains(event.getPacketType())) {
+                //Stealsolo.getPlugin().getLogger().info("Cancelling movement packet from player " + player.getName() + " in AFK area.");
+                event.setCancelled(true);
+            }
+        } catch (Exception ignored) {
         }
     }
 }

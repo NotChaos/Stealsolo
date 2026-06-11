@@ -5,6 +5,14 @@ import com.duckydeveloper.util.GUI;
 import com.duckydeveloper.util.Message;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.event.PacketListenerPriority;
+import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.flags.DoubleFlag;
+import com.sk89q.worldguard.protection.flags.Flag;
+import com.sk89q.worldguard.protection.flags.IntegerFlag;
+import com.sk89q.worldguard.protection.flags.StringFlag;
+import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
+import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import fun.stealsolo.Packetevents.PacketEventsPacketListener;
 import fun.stealsolo.PlaceholderAPI.StealsoloExpansion;
 import fun.stealsolo.commands.*;
@@ -14,11 +22,12 @@ import fun.stealsolo.util.*;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
+import net.milkbowl.vault.economy.Economy;
+import nl.marido.deluxecombat.api.DeluxeCombatAPI;
+import nl.marido.deluxecombat.events.CombatlogEvent;
 import org.black_ixx.playerpoints.PlayerPoints;
 import org.black_ixx.playerpoints.PlayerPointsAPI;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
@@ -26,7 +35,11 @@ import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.Array;
@@ -75,8 +88,6 @@ public class Stealsolo extends JavaPlugin {
     @Getter
     private static Component antiPickupDisabled;
     @Getter
-    private static final Set<DamageArea> damageAreas = new HashSet<>();
-    @Getter
     private static Area afkArea;
     @Getter
     private static String participationRewardCommand;
@@ -99,6 +110,52 @@ public class Stealsolo extends JavaPlugin {
     @Getter
     private static final HashMap<UUID, Integer> killstreaks = new HashMap<>();
     private static final ArrayList<String> killstreakData = new ArrayList<>();
+    @Getter
+    private static final HashMap<UUID, Integer> keepinventoryBalance = new HashMap<>();
+    private static final ArrayList<String> keepinventoryBalanceData = new ArrayList<>();
+    @Getter
+    private static ItemStack keepInventoryItem;
+    @Getter
+    private static Economy econ = null;
+    @Getter
+    private static DeluxeCombatAPI deluxecombatApi;
+    @Getter
+    private static boolean currencyEnabled;
+    @Getter
+    private static String currencyName;
+    @Getter
+    private static String currencySymbol;
+    @Getter
+    private static int currencyMax;
+    @Getter
+    private static boolean reviveEnabled;
+    @Getter
+    private static int reviveHealPercent;
+    @Getter
+    private static String reviveSound;
+    @Getter
+    private static List<ConfigParticle> reviveParticles;
+    @Getter
+    private static DoubleFlag DamageMultiplierFlag;
+    @Getter
+    private static final List<BattleLocation> battleLocations = new ArrayList<>();
+    @Getter
+    private static Location spawnLocation;
+    @Getter
+    private static final HashMap<UUID, UUID> battleRequests = new HashMap<>();
+
+    public static List<Player> activeBattlers() {
+        List<Player> activeBattlers = new ArrayList<>();
+
+        battleLocations.forEach(location -> {
+            if (location.active()) {
+                activeBattlers.add(location.firstPlayer());
+                activeBattlers.add(location.secondPlayer());
+            }
+        });
+
+        return activeBattlers;
+    }
 
     private static void initConfig() {
         plugin.getLogger().info("Loading Stealsolo configuration...");
@@ -122,27 +179,6 @@ public class Stealsolo extends JavaPlugin {
         streamHoverMsg = configuration.getString("media.StreamHoverMessage", "&5Click to watch %player% at %link%!");
         paycoinsMessageSender = configuration.getString("paycoins.PayMessageSender", "&5You have paid &6%amount% &5coins to &6%player%&5.");
         paycoinsMessageRecipient = configuration.getString("paycoins.PayMessageRecipient", "&5You have received &6%amount% &5coins from &6%player%&5.");
-
-        damageAreas.clear();
-
-        for (String key : Objects.requireNonNull(configuration.getConfigurationSection("DmgBoostAreas")).getKeys(false)) {
-            DamageArea area = new DamageArea(
-                    configuration.getString("DmgBoostAreas." + key + ".name", "Unnamed Area"),
-                    new Location(
-                            Bukkit.getWorld(configuration.getString("DmgBoostAreas." + key + ".world", "minecraft:overworld")),
-                            configuration.getInt("DmgBoostAreas." + key + ".corner1.x", 0),
-                            configuration.getInt("DmgBoostAreas." + key + ".corner1.y", 0),
-                            configuration.getInt("DmgBoostAreas." + key + ".corner1.z", 0)),
-                    new Location(
-                            Bukkit.getWorld(configuration.getString("DmgBoostAreas." + key + ".world", "minecraft:overworld")),
-                            configuration.getInt("DmgBoostAreas." + key + ".corner2.x", 0),
-                            configuration.getInt("DmgBoostAreas." + key + ".corner2.y", 0),
-                            configuration.getInt("DmgBoostAreas." + key + ".corner2.z", 0)),
-                    configuration.getDouble("DmgBoostAreas." + key + ".dmg-multiplier", 1.0)
-            );
-
-            damageAreas.add(area);
-        }
 
         afkArea = new Area("Coin Area",
                 new Location(Bukkit.getWorld(configuration.getString("CoinArea.corner1.world", "minecraft:overworld")),
@@ -214,6 +250,7 @@ public class Stealsolo extends JavaPlugin {
         duckAPIBuilder.setPlugin(plugin);
         duckAPIBuilder.setDebug(debug);
         duckAPIBuilder.setEnableHeadAPIIntegration(true);
+        duckAPIBuilder.setBstatsId(31050);
         DuckAPI.init(duckAPIBuilder);
 
         plugin.getLogger().info("Duck API initialized!");
@@ -241,10 +278,129 @@ public class Stealsolo extends JavaPlugin {
             }
         }
 
+        try {
+            keepInventoryItem = new ItemStack(Material.valueOf(configuration.getString("KeepInventory.Item.Material", "PAPER")));
+        } catch (Exception e) {
+            keepInventoryItem = new ItemStack(Material.PAPER);
+        }
+
+        keepinventoryBalanceData.clear();
+        List<String> storedKeepinventoryBalance = configuration.getStringList("KeepInventory.Data");
+        keepinventoryBalanceData.addAll(storedKeepinventoryBalance);
+
+        for (String data : storedKeepinventoryBalance) {
+            String[] parts = data.split(":", 2);
+            if (parts.length != 2) continue;
+
+            try {
+                UUID playerUUID = UUID.fromString(parts[0]);
+                int streak = Integer.parseInt(parts[1]);
+                keepinventoryBalance.put(playerUUID, streak);
+            } catch (IllegalArgumentException e) {
+                plugin.getLogger().warning("[Stealsolo] Ignoring invalid keepinv balance entry: " + data);
+            }
+        }
+
+        try {
+            keepInventoryItem = new ItemStack(Material.valueOf(configuration.getString("KeepInventory.Item.Material", "PAPER")));
+        } catch (Exception e) {
+            keepInventoryItem = new ItemStack(Material.PAPER);
+        }
+
+        ItemMeta itemMeta = keepInventoryItem.getItemMeta();
+        itemMeta.setDisplayName(Message.convertStringToLegacy(configuration.getString("KeepInventory.Item.Name", "&aKeep Inventory Token")));
+        itemMeta.setLore(Message.convertStringListToLegacy(configuration.getStringList("KeepInventory.Item.Lore")));
+        itemMeta.getPersistentDataContainer().set(new NamespacedKey(plugin, DuckAPI.getPersistentDataKey() + ".keepInventory"), PersistentDataType.BOOLEAN, true);
+
+        keepInventoryItem.setItemMeta(itemMeta);
+
+
+        currencyEnabled = configuration.getBoolean("KeepInventory.DigitalCurrency.Enabled", true);
+        currencyName = configuration.getString("KeepInventory.DigitalCurrency.Name", "Keepinventory Coins");
+        currencySymbol = configuration.getString("KeepInventory.DigitalCurrency.Symbol", "KIC");
+        currencyMax = configuration.getInt("KeepInventory.DigitalCurrency.Max", 3);
+
+        reviveEnabled = configuration.getBoolean("KeepInventory.Respawn.Blocked", true);
+        reviveHealPercent = configuration.getInt("KeepInventory.Respawn.HealPercent", 50);
+        reviveSound = configuration.getString("KeepInventory.Respawn.Sound", "entity.zombie.break_wooden_door");
+        reviveParticles = new ArrayList<>();
+        List<String> particlesConfig = configuration.getStringList("KeepInventory.Respawn.Particles");
+        for (String particleConfig : particlesConfig) {
+            String[] parts = particleConfig.split(":");
+            if (parts.length != 6) {
+                plugin.getLogger().warning("[Stealsolo] Invalid particle configuration: " + particleConfig);
+                continue;
+            }
+            try {
+                Particle particle = Particle.valueOf(parts[0].toUpperCase().replace(".", "_"));
+                int count = Integer.parseInt(parts[1]);
+                double offsetX = Double.parseDouble(parts[2]);
+                double offsetY = Double.parseDouble(parts[3]);
+                double offsetZ = Double.parseDouble(parts[4]);
+                double speed = Double.parseDouble(parts[5]);
+                reviveParticles.add(new ConfigParticle(particle, count, offsetX, offsetY, offsetZ, speed));
+            } catch (Exception e) {
+                plugin.getLogger().warning("[Stealsolo] Invalid particle configuration: " + particleConfig);
+            }
+        }
+
+        if (!battleLocations.isEmpty()) {
+            battleLocations.forEach(battleLocation -> {
+                if (battleLocation.firstPlayer() != null && spawnLocation != null) {
+                    battleLocation.firstPlayer().teleport(spawnLocation);
+                    Message.important(battleLocation.firstPlayer(), DuckAPI.getLanguageComponent("1v1.Reload.KickedFromBattle"));
+                }
+
+                if (battleLocation.secondPlayer() != null && spawnLocation != null) {
+                    battleLocation.secondPlayer().teleport(spawnLocation);
+                    Message.important(battleLocation.firstPlayer(), DuckAPI.getLanguageComponent("1v1.Reload.KickedFromBattle"));
+                }
+            });
+        }
+
+        configuration.getConfigurationSection("1v1").getKeys(false).forEach(key -> {
+            Location location = new Location(Bukkit.getWorld(configuration.getString("1v1." + key + ".world", "minecraft:overworld")),
+                    configuration.getDouble("1v1." + key + ".x", 0),
+                    configuration.getDouble("1v1." + key + ".y", 100),
+                    configuration.getDouble("1v1." + key + ".z", 0));
+
+            if (key.toLowerCase().equals("spawn")) {
+                spawnLocation = location;
+            } else {
+                battleLocations.add(new BattleLocation(location, false, null, null));
+            }
+        });
+
+
         plugin.getLogger().info("Configuration loaded.");
     }
 
     public static void setKillstreak(UUID playerUUID, int killstreak) {
+        if (killstreak <= 0) {
+            killstreaks.remove(playerUUID);
+
+            // Remove any entries in killstreakData matching this UUID
+            Iterator<String> it = killstreakData.iterator();
+            while (it.hasNext()) {
+                String data = it.next();
+                String[] parts = data.split(":", 2);
+                if (parts.length != 2) continue;
+
+                try {
+                    UUID searchingUUID = UUID.fromString(parts[0]);
+                    if (searchingUUID.equals(playerUUID)) {
+                        it.remove();
+                    }
+                } catch (IllegalArgumentException ignored) {
+                }
+            }
+
+            configuration.set("DeathPenalty.KillStreakData", new ArrayList<>(killstreakData));
+            plugin.saveConfig();
+            return;
+        }
+
+        // Otherwise update or add the killstreak
         killstreaks.put(playerUUID, killstreak);
 
         boolean updated = false;
@@ -278,6 +434,67 @@ public class Stealsolo extends JavaPlugin {
         }
 
         return killstreaks.get(playerUUID);
+    }
+
+    public static void setKeepinventoryBalance(UUID playerUUID, int balance) {
+        if (balance <= 0) {
+            keepinventoryBalance.remove(playerUUID);
+
+            // Remove any entries in keepinventoryBalanceData matching this UUID
+            Iterator<String> it = keepinventoryBalanceData.iterator();
+            while (it.hasNext()) {
+                String data = it.next();
+                String[] parts = data.split(":", 2);
+                if (parts.length != 2) continue;
+
+                try {
+                    UUID searchingUUID = UUID.fromString(parts[0]);
+                    if (searchingUUID.equals(playerUUID)) {
+                        it.remove();
+                    }
+                } catch (IllegalArgumentException ignored) {
+                }
+            }
+
+            configuration.set("KeepInventory.Data", new ArrayList<>(keepinventoryBalanceData));
+            plugin.saveConfig();
+            return;
+        }
+
+        // Otherwise update or add the balance
+        keepinventoryBalance.put(playerUUID, balance);
+
+        boolean updated = false;
+        for (int i = 0; i < keepinventoryBalanceData.size(); i++) {
+            String data = keepinventoryBalanceData.get(i);
+            String[] parts = data.split(":", 2);
+            if (parts.length != 2) continue;
+
+            try {
+                UUID searchingUUID = UUID.fromString(parts[0]);
+                if (searchingUUID.equals(playerUUID)) {
+                    keepinventoryBalanceData.set(i, playerUUID.toString() + ":" + balance);
+                    updated = true;
+                    break;
+                }
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+
+        if (!updated) {
+            keepinventoryBalanceData.add(playerUUID.toString() + ":" + balance);
+        }
+
+        configuration.set("KeepInventory.Data", new ArrayList<>(keepinventoryBalanceData));
+        plugin.saveConfig();
+    }
+
+    public static int getKeepinventoryBalance(UUID playerUUID) {
+        if (keepinventoryBalance.get(playerUUID) == null) {
+            return 0;
+        }
+
+        return keepinventoryBalance.get(playerUUID);
     }
 
     public static void reloadConfiguration() {
@@ -324,6 +541,14 @@ public class Stealsolo extends JavaPlugin {
             plugin.getLogger().warning("PlaceholderAPI not found. Placeholders will not work.");
         }
 
+        if (!setupEconomy() ) {
+            plugin.getLogger().severe(String.format("[%s] - No Vault dependency found!", plugin.getDescription().getName()));
+        }
+
+        if (Bukkit.getPluginManager().getPlugin("DeluxeCombat") != null) {
+            deluxecombatApi = new DeluxeCombatAPI();
+        }
+
         plugin.getLogger().info("Dependencies loaded.");
     }
 
@@ -336,6 +561,22 @@ public class Stealsolo extends JavaPlugin {
 
         PacketEvents.getAPI().getEventManager().registerListener(
                 new PacketEventsPacketListener(), PacketListenerPriority.NORMAL);
+
+        FlagRegistry registry = WorldGuard.getInstance().getFlagRegistry();
+        try {
+            DoubleFlag damageMultiplierFlag = new DoubleFlag("damage-multiplier");
+            registry.register(damageMultiplierFlag);
+            DamageMultiplierFlag = damageMultiplierFlag;
+        } catch (FlagConflictException e) {
+            Flag<?> existingDamageMultiplier = registry.get("damage-multiplier");
+
+            if (existingDamageMultiplier instanceof DoubleFlag) {
+                DoubleFlag existingDoubleFlag = (DoubleFlag) existingDamageMultiplier;
+                DamageMultiplierFlag = existingDoubleFlag;
+            } else {
+                getLogger().severe("Flag conflict: 'damage-multiplier' exists but is not a DoubleFlag.");
+            }
+        }
     }
 
     @Override
@@ -365,6 +606,18 @@ public class Stealsolo extends JavaPlugin {
         plugin.getLogger().info("Stealsolo plugin disabled.");
     }
 
+    private static boolean setupEconomy() {
+        if (plugin.getServer().getPluginManager().getPlugin("Vault") == null) {
+            return false;
+        }
+        RegisteredServiceProvider<Economy> rsp = plugin.getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            return false;
+        }
+        econ = rsp.getProvider();
+        return econ != null;
+    }
+
     private void initEvents() {
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new onInventoryCloseEvent(), this);
@@ -374,6 +627,10 @@ public class Stealsolo extends JavaPlugin {
         pm.registerEvents(new onItemPickupEvent(), this);
         pm.registerEvents(new onAsyncChatEvent(), this);
         pm.registerEvents(new onPlayerDeathEvent(this, debug), this);
+        pm.registerEvents(new onItemInteractEvent(this, debug), this);
+        pm.registerEvents(new onCombatLogEvent(this, debug), this);
+        pm.registerEvents(new onPlayerUseRespawnEvent(this, debug), this);
+        pm.registerEvents(new onDeathInBattleEvent(this, debug), this);
 
         plugin.getLogger().info("Events registered.");
     }
@@ -392,6 +649,10 @@ public class Stealsolo extends JavaPlugin {
         Objects.requireNonNull(getCommand("coinarea")).setExecutor(new AfkCommand());
         Objects.requireNonNull(getCommand("antipickup")).setExecutor(new AntiPickupCommand());
         Objects.requireNonNull(getCommand("statistics")).setExecutor(new StatisticsCommand());
+        Objects.requireNonNull(getCommand("givekeepinventoryitem")).setExecutor(new KeepInventoryItemCommand());
+        Objects.requireNonNull(getCommand("requestbattle")).setExecutor(new BattleCommand());
+        Objects.requireNonNull(getCommand("acceptbattle")).setExecutor(new AcceptBattleCommand());
+        Objects.requireNonNull(getCommand("denybattle")).setExecutor(new DenyBattleCommand());
 
         plugin.getLogger().info("Commands registered.");
     }
@@ -410,6 +671,10 @@ public class Stealsolo extends JavaPlugin {
         Objects.requireNonNull(getCommand("coinarea")).setTabCompleter(new EmptyTC());
         Objects.requireNonNull(getCommand("antipickup")).setTabCompleter(new EmptyTC());
         Objects.requireNonNull(getCommand("statistics")).setTabCompleter(new SimpleTC());
+        Objects.requireNonNull(getCommand("givekeepinventoryitem")).setTabCompleter(new KeepInventoryItemTC());
+        Objects.requireNonNull(getCommand("requestbattle")).setTabCompleter(new SimpleTC());
+        Objects.requireNonNull(getCommand("acceptbattle")).setTabCompleter(new SimpleTC());
+        Objects.requireNonNull(getCommand("denybattle")).setTabCompleter(new SimpleTC());
 
         plugin.getLogger().info("Tab completers registered.");
     }
@@ -436,10 +701,20 @@ public class Stealsolo extends JavaPlugin {
             bossBar.setVisible(true);
 
             for (Player player : Bukkit.getOnlinePlayers()) {
-                if (afkArea.isInArea(player.getLocation())) {
-                    bossBar.addPlayer(player);
-                    Bukkit.getScheduler().runTaskLater(plugin, () -> bossBar.removePlayer(player), 20L);
+                if (player.getLocation() == null) {
+                    return;
                 }
+
+                if (player.getWorld() == null) {
+                    return;
+                }
+
+                try {
+                    if (afkArea.isInArea(player.getLocation())) {
+                        bossBar.addPlayer(player);
+                        Bukkit.getScheduler().runTaskLater(plugin, () -> bossBar.removePlayer(player), 20L);
+                    }
+                } catch (Exception ignore) {}
             }
         }, 0L, 20L);
 

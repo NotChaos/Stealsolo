@@ -50,6 +50,9 @@ public class StealsoloExpansion extends PlaceholderExpansion {
 
                 return String.valueOf(p.getPing());
             }
+            case "keepinventory_balance" -> {
+                return String.valueOf(Stealsolo.getKeepinventoryBalance(player.getUniqueId()));
+            }
             default -> {
                 return null;
             }
