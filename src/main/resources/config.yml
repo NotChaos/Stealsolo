@@ -31,6 +31,17 @@ media:
     y: 0
     z: 200
 
+customenchant:
+  knockback:
+    cooldown-seconds: 3.0
+    power: 1.2
+  dash:
+    cooldown-seconds: 2.5
+  effect:
+    cooldown-seconds: 8.0
+    duration-seconds: 5
+    amplifier: 1
+
 paycoins:
     # %player% = command sender
     # %amount% = amount
@@ -411,6 +422,15 @@ DeathPenalty:
   KillStreakLostMessage: "&5%player% has lost his killstreak of %killstreak%!"
   KillStreakThreshold: 5 # that means that every after 5 kills, the message will be broadcasted
   KillStreakData:
+
+LimitCombatItems:
+  Enabled: true
+  # if the player has one of these items in their inventory, they won't be able to enter combat
+  CombatItems:
+    - ENCHANTED_GOLDEN_APPLE:5
+    - GOLDEN_APPLE:10
+    - TOTEM_OF_UNDYING:3
+  Data:
 
 antipickup:
   EnabledMessage: "&5Anti-pickup is now enabled."

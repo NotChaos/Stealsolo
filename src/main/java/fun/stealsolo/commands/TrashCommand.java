@@ -1,7 +1,7 @@
 package fun.stealsolo.commands;
 
-import fun.stealsolo.events.onInventoryCloseEvent;
 import com.duckydeveloper.util.Message;
+import fun.stealsolo.events.onInventoryCloseEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;

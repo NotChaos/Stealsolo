@@ -1,7 +1,7 @@
 package fun.stealsolo.events;
 
-import fun.stealsolo.Stealsolo;
 import com.duckydeveloper.util.Message;
+import fun.stealsolo.Stealsolo;
 import fun.stealsolo.util.Quiz;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;

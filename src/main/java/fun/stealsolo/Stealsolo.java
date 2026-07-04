@@ -5,12 +5,9 @@ import com.duckydeveloper.util.GUI;
 import com.duckydeveloper.util.Message;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.event.PacketListenerPriority;
-import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.flags.DoubleFlag;
 import com.sk89q.worldguard.protection.flags.Flag;
-import com.sk89q.worldguard.protection.flags.IntegerFlag;
-import com.sk89q.worldguard.protection.flags.StringFlag;
 import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import fun.stealsolo.Packetevents.PacketEventsPacketListener;
@@ -24,7 +21,6 @@ import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.milkbowl.vault.economy.Economy;
 import nl.marido.deluxecombat.api.DeluxeCombatAPI;
-import nl.marido.deluxecombat.events.CombatlogEvent;
 import org.black_ixx.playerpoints.PlayerPoints;
 import org.black_ixx.playerpoints.PlayerPointsAPI;
 import org.bukkit.*;
@@ -42,7 +38,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.sql.Array;
 import java.util.*;
 
 public class Stealsolo extends JavaPlugin {
@@ -373,6 +368,9 @@ public class Stealsolo extends JavaPlugin {
 
 
         plugin.getLogger().info("Configuration loaded.");
+
+        // Load limit-combat-items config
+        LimitCombatItemsManager.load(configuration);
     }
 
     public static void setKillstreak(UUID playerUUID, int killstreak) {
@@ -631,6 +629,9 @@ public class Stealsolo extends JavaPlugin {
         pm.registerEvents(new onCombatLogEvent(this, debug), this);
         pm.registerEvents(new onPlayerUseRespawnEvent(this, debug), this);
         pm.registerEvents(new onDeathInBattleEvent(this, debug), this);
+        pm.registerEvents(new onCustomWeaponInteractEvent(), this);
+        pm.registerEvents(new onCombatStateChangeEvent(this, debug), this);
+        pm.registerEvents(new onPlayerJoinEvent(this, debug), this);
 
         plugin.getLogger().info("Events registered.");
     }
@@ -653,6 +654,8 @@ public class Stealsolo extends JavaPlugin {
         Objects.requireNonNull(getCommand("requestbattle")).setExecutor(new BattleCommand());
         Objects.requireNonNull(getCommand("acceptbattle")).setExecutor(new AcceptBattleCommand());
         Objects.requireNonNull(getCommand("denybattle")).setExecutor(new DenyBattleCommand());
+        Objects.requireNonNull(getCommand("addcustomenchant")).setExecutor(new AddCustomEnchantCommand());
+        Objects.requireNonNull(getCommand("returncombatitems")).setExecutor(new ReturnCombatItemsCommand());
 
         plugin.getLogger().info("Commands registered.");
     }
@@ -675,6 +678,8 @@ public class Stealsolo extends JavaPlugin {
         Objects.requireNonNull(getCommand("requestbattle")).setTabCompleter(new SimpleTC());
         Objects.requireNonNull(getCommand("acceptbattle")).setTabCompleter(new SimpleTC());
         Objects.requireNonNull(getCommand("denybattle")).setTabCompleter(new SimpleTC());
+        Objects.requireNonNull(getCommand("addcustomenchant")).setTabCompleter(new AddCustomEnchantTC());
+        Objects.requireNonNull(getCommand("returncombatitems")).setTabCompleter(new SimpleTC());
 
         plugin.getLogger().info("Tab completers registered.");
     }

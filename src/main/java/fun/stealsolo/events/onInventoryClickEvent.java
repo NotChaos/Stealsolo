@@ -1,8 +1,6 @@
 package fun.stealsolo.events;
 
-import com.destroystokyo.paper.profile.PlayerProfile;
 import com.duckydeveloper.util.Message;
-import fun.stealsolo.Stealsolo;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -11,7 +9,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 
 public class onInventoryClickEvent implements Listener {
 

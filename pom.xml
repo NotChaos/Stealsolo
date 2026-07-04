@@ -6,7 +6,7 @@
 
     <groupId>fun.stealsolo</groupId>
     <artifactId>stealsoloplugin</artifactId>
-    <version>1.5.4</version>
+    <version>1.5.5</version>
     <packaging>jar</packaging>
 
     <name>stealsoloplugin</name>

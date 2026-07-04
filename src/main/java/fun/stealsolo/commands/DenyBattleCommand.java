@@ -3,7 +3,6 @@ package fun.stealsolo.commands;
 import com.duckydeveloper.DuckAPI;
 import com.duckydeveloper.util.Message;
 import fun.stealsolo.Stealsolo;
-import fun.stealsolo.util.BattleLocation;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

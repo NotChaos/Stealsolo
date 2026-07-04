@@ -1,7 +1,7 @@
 package fun.stealsolo.commands;
 
-import fun.stealsolo.Stealsolo;
 import com.duckydeveloper.util.Message;
+import fun.stealsolo.Stealsolo;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;

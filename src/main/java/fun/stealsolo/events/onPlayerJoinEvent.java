@@ -2,14 +2,13 @@ package fun.stealsolo.events;
 
 import com.duckydeveloper.DuckAPI;
 import com.duckydeveloper.util.Message;
+import lombok.Getter;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.Plugin;
-
-import lombok.Getter;
 
 import java.util.logging.Logger;
 
@@ -30,7 +29,7 @@ public class onPlayerJoinEvent implements Listener {
     }
 
     @EventHandler
-    public void PlayerJoinEvent(PlayerJoinEvent e) {
+    public void PlayerJoinEvent(PlayerTeleportEvent e) {
         Player player = e.getPlayer();
 
         if (player.getFirstPlayed() == player.getLastPlayed()) {

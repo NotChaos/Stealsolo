@@ -4,14 +4,13 @@ import com.duckydeveloper.DuckAPI;
 import com.duckydeveloper.util.Message;
 import fun.stealsolo.Stealsolo;
 import fun.stealsolo.util.BattleLocation;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.plugin.Plugin;
-
-import lombok.Getter;
 
 import java.util.logging.Logger;
 

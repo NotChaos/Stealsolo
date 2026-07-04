@@ -11,6 +11,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.UUID;
+
 public class AcceptBattleCommand implements CommandExecutor {
 
     @Override
@@ -32,7 +34,19 @@ public class AcceptBattleCommand implements CommandExecutor {
             return false;
         }
 
-        Player requester = Bukkit.getPlayer(Stealsolo.getBattleRequests().get(player.getUniqueId()));
+        if (target.getName().equalsIgnoreCase(player.getName())) {
+            Message.invalid(player, DuckAPI.getLanguageComponent("1v1.SelfRequest"));
+            return false;
+        }
+
+        UUID uuid = Stealsolo.getBattleRequests().get(player.getUniqueId());
+
+        if (uuid == null) {
+            Message.invalid(player, DuckAPI.getLanguageComponent("1v1.NoRequest"));
+            return false;
+        }
+
+        Player requester = Bukkit.getPlayer(uuid);
 
         if (requester == null) {
             Message.invalid(player, DuckAPI.getLanguageComponent("1v1.NoRequest"));

@@ -1,7 +1,7 @@
 name: StealSolo
 author: Chaos
 description: StealSolo plugin
-version: '1.5.4'
+version: '${version}'
 main: fun.stealsolo.Stealsolo
 api-version: '1.21'
 softdepend: ["PlayerPoints", "PlaceholderAPI", "packetevents", "HeadDatabase", "DeluxeCombat", "WorldGuard"]
@@ -66,7 +66,17 @@ commands:
       - deny1v1
       - 1v1deny
     permission: stealsolo.startbattle
-
+  addcustomenchant:
+    description: Add a custom enchantment to an item
+    aliases:
+      - addenchant
+      - customenchantment
+    permission: stealsolo.addcustomenchant
+  returncombatitems:
+    description: Return items that were held due to combat limits
+    aliases:
+      - returnitems
+    permission: stealsolo.returncombatitems
 
 permissions:
   stealsolo.*:
@@ -81,6 +91,8 @@ permissions:
       - stealsolo.antipickup
       - stealsolo.givekeepinventoryitem
       - stealsolo.startbattle
+      - stealsolo.nightvision
+      - stealsolo.addcustomenchant
   stealsolo.media:
     default: op
   stealsolo.trash:
@@ -100,4 +112,8 @@ permissions:
   stealsol.givekeepinventoryitem:
     default: op
   stealsolo.startbattle:
+    default: true
+  stealsolo.addcustomenchant:
+    default: op
+  stealsolo.returncombatitems:
     default: true

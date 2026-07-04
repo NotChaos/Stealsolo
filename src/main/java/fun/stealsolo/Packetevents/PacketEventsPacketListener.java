@@ -3,12 +3,9 @@ package fun.stealsolo.Packetevents;
 import com.github.retrooper.packetevents.event.PacketListener;
 import com.github.retrooper.packetevents.event.PacketSendEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
-import com.github.retrooper.packetevents.protocol.player.User;
 import fun.stealsolo.Stealsolo;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

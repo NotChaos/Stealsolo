@@ -2,6 +2,7 @@ package fun.stealsolo.events;
 
 import com.duckydeveloper.DuckAPI;
 import fun.stealsolo.Stealsolo;
+import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
@@ -11,8 +12,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
-
-import lombok.Getter;
 
 import java.util.Arrays;
 import java.util.logging.Logger;
