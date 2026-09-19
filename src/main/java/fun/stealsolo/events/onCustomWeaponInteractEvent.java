@@ -1,12 +1,17 @@
 package fun.stealsolo.events;
 
 import com.duckydeveloper.DuckAPI;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.util.Location;
+import com.sk89q.worldguard.LocalPlayer;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
 import fun.stealsolo.Stealsolo;
 import fun.stealsolo.commands.AddCustomEnchantCommand;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.Particle;
+import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,6 +29,7 @@ import org.bukkit.util.Vector;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class onCustomWeaponInteractEvent implements Listener {
 
@@ -157,9 +163,20 @@ public class onCustomWeaponInteractEvent implements Listener {
         setCooldown(player, "KNOCKBACK", sourceId);
 
         for (Player target : Bukkit.getOnlinePlayers()) {
+            if (player.isInvulnerable()) continue;
             if (target.getUniqueId().equals(player.getUniqueId())) continue;
             if (!target.getWorld().equals(player.getWorld())) continue;
             if (target.getLocation().distanceSquared(player.getLocation()) > (radius * radius)) continue;
+
+            LocalPlayer localPlayer = WorldGuardPlugin.inst().wrapPlayer(player);
+            Location loc = BukkitAdapter.adapt(player.getLocation());
+            RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+            RegionQuery query = container.createQuery();
+            ApplicableRegionSet set = query.getApplicableRegions(loc);
+
+            if (!set.testState(localPlayer, Stealsolo.getKnockbackFlag())) {
+                return;
+            }
 
             Vector dir = target.getLocation().toVector().subtract(player.getLocation().toVector()).normalize();
             dir.setY(0.35);
@@ -185,8 +202,13 @@ public class onCustomWeaponInteractEvent implements Listener {
         setCooldown(player, "DASH", sourceId);
 
         Vector velocity = player.getLocation().getDirection().normalize().multiply(strength);
-        velocity.setY(Math.max(velocity.getY(), 0.15D));
+
+        if (player.isOnGround()) {
+            velocity.setY(Math.max(velocity.getY(), 0.15D));
+        }
+
         player.setVelocity(velocity);
+        player.playSound(player.getLocation(), Sound.ENTITY_PHANTOM_FLAP, 1.0F, 1.0F);
     }
 
     private void handleEffect(Player player, String value, String sourceId) {

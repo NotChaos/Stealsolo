@@ -3,6 +3,7 @@ package fun.stealsolo.commands;
 import com.duckydeveloper.DuckAPI;
 import com.duckydeveloper.util.Message;
 import fun.stealsolo.Stealsolo;
+import fun.stealsolo.util.BattleRequest;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -31,15 +32,18 @@ public class DenyBattleCommand implements CommandExecutor {
             return false;
         }
 
-        Player requester = Bukkit.getPlayer(Stealsolo.getBattleRequests().get(player.getUniqueId()));
+        Player requestSender = Stealsolo.getBattleRequests().stream()
+                .filter(request -> request.sender().equals(target))
+                .map(BattleRequest::sender)
+                .findFirst()
+                .orElse(null);
 
-        if (requester == null) {
+        if (requestSender == null) {
             Message.invalid(player, DuckAPI.getLanguageComponent("1v1.NoRequest"));
             return false;
         }
 
-        Stealsolo.getBattleRequests().remove(player.getUniqueId(), target.getUniqueId());
-        Stealsolo.getBattleRequests().remove(target.getUniqueId(), player.getUniqueId());
+        Stealsolo.getBattleRequests().remove(new BattleRequest(requestSender, player));
         Message.successful(player, Message.replaceInComponent(DuckAPI.getLanguageComponent("1v1.Request.Denied"), "%target%", target.getName()));
         return true;
     }

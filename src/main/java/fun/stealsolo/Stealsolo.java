@@ -6,8 +6,10 @@ import com.duckydeveloper.util.Message;
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.flags.BooleanFlag;
 import com.sk89q.worldguard.protection.flags.DoubleFlag;
 import com.sk89q.worldguard.protection.flags.Flag;
+import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import fun.stealsolo.Packetevents.PacketEventsPacketListener;
@@ -38,6 +40,10 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URL;
 import java.util.*;
 
 public class Stealsolo extends JavaPlugin {
@@ -133,11 +139,13 @@ public class Stealsolo extends JavaPlugin {
     @Getter
     private static DoubleFlag DamageMultiplierFlag;
     @Getter
+    private static StateFlag KnockbackFlag;
+    @Getter
     private static final List<BattleLocation> battleLocations = new ArrayList<>();
     @Getter
     private static Location spawnLocation;
     @Getter
-    private static final HashMap<UUID, UUID> battleRequests = new HashMap<>();
+    private static final HashSet<BattleRequest> battleRequests = new HashSet<>();
 
     public static List<Player> activeBattlers() {
         List<Player> activeBattlers = new ArrayList<>();
@@ -240,13 +248,32 @@ public class Stealsolo extends JavaPlugin {
 
         plugin.getLogger().info("Quiz questions loaded: " + Quiz.getQuestions().size());
 
-
         DuckAPI.DuckAPIBuilder duckAPIBuilder = new DuckAPI.DuckAPIBuilder();
         duckAPIBuilder.setPlugin(plugin);
         duckAPIBuilder.setDebug(debug);
         duckAPIBuilder.setEnableHeadAPIIntegration(true);
         duckAPIBuilder.setBstatsId(31050);
+        duckAPIBuilder.setPluginUuid(UUID.fromString("97a6413e-f33c-4737-87ce-c9a79622ea94"));
+        duckAPIBuilder.setKey(configuration.getString("Key"));
         DuckAPI.init(duckAPIBuilder);
+
+        DuckAPI.isKeyValidAsync().thenAccept(valid -> {
+            if (valid != true) {
+                Bukkit.getPluginManager().disablePlugin(plugin);
+                try {
+                    URL whatismyip = new URI("http://checkip.amazonaws.com").toURL();
+                    BufferedReader in = new BufferedReader(new InputStreamReader(
+                            whatismyip.openStream()));
+                    String ip = in.readLine();
+
+                    plugin.getLogger().severe("The key " + DuckAPI.getKey() + " is invalid or your server has not been whitelisted. Please ask on Discord for a whitelist for the ip: " + ip);
+                } catch (Exception e) {
+                    plugin.getLogger().severe("The key " + DuckAPI.getKey() + " is invalid or your server has not been whitelisted. Please ask on Discord for a whitelist of your server ip.");
+                }
+            } else {
+                plugin.getLogger().info("Valid key(" + DuckAPI.getKey() + ") has been loaded.");
+            }
+        });
 
         plugin.getLogger().info("Duck API initialized!");
 
@@ -554,26 +581,47 @@ public class Stealsolo extends JavaPlugin {
     public void onLoad() {
         plugin = this;
 
-        PacketEvents.setAPI(SpigotPacketEventsBuilder.build(plugin));
-        PacketEvents.getAPI().load();
+        if (Bukkit.getPluginManager().isPluginEnabled("packetevents")) {
+            PacketEvents.setAPI(SpigotPacketEventsBuilder.build(plugin));
+            PacketEvents.getAPI().load();
 
-        PacketEvents.getAPI().getEventManager().registerListener(
-                new PacketEventsPacketListener(), PacketListenerPriority.NORMAL);
+            PacketEvents.getAPI().getEventManager().registerListener(
+                    new PacketEventsPacketListener(), PacketListenerPriority.NORMAL);
+        } else {
+            getLogger().warning("packetevents not found! This might break the plugin.");
+        }
 
-        FlagRegistry registry = WorldGuard.getInstance().getFlagRegistry();
-        try {
-            DoubleFlag damageMultiplierFlag = new DoubleFlag("damage-multiplier");
-            registry.register(damageMultiplierFlag);
-            DamageMultiplierFlag = damageMultiplierFlag;
-        } catch (FlagConflictException e) {
-            Flag<?> existingDamageMultiplier = registry.get("damage-multiplier");
+        if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) {
+            FlagRegistry registry = WorldGuard.getInstance().getFlagRegistry();
+            try {
+                DoubleFlag damageMultiplierFlag = new DoubleFlag("damage-multiplier");
+                registry.register(damageMultiplierFlag);
+                DamageMultiplierFlag = damageMultiplierFlag;
 
-            if (existingDamageMultiplier instanceof DoubleFlag) {
-                DoubleFlag existingDoubleFlag = (DoubleFlag) existingDamageMultiplier;
-                DamageMultiplierFlag = existingDoubleFlag;
-            } else {
-                getLogger().severe("Flag conflict: 'damage-multiplier' exists but is not a DoubleFlag.");
+                StateFlag knockbackFlag = new StateFlag("knockback", false);
+                registry.register(knockbackFlag);
+                KnockbackFlag = knockbackFlag;
+            } catch (FlagConflictException e) {
+                Flag<?> existingDamageMultiplier = registry.get("damage-multiplier");
+
+                if (existingDamageMultiplier instanceof DoubleFlag) {
+                    DoubleFlag existingDoubleFlag = (DoubleFlag) existingDamageMultiplier;
+                    DamageMultiplierFlag = existingDoubleFlag;
+                } else {
+                    getLogger().severe("Flag conflict: 'damage-multiplier' exists but is not a DoubleFlag.");
+                }
+
+                Flag<?> existingKnockbackFlag = registry.get("knockback");
+
+                if (existingKnockbackFlag instanceof StateFlag) {
+                    StateFlag existingStateFlag = (StateFlag) existingKnockbackFlag;
+                    KnockbackFlag = existingStateFlag;
+                } else {
+                    getLogger().severe("Flag conflict: 'knockback' exists but is not a StateFlag.");
+                }
             }
+        } else {
+            getLogger().warning("WorldGuard not found! This might break the plugin.");
         }
     }
 

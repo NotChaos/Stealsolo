@@ -4,6 +4,7 @@ import com.duckydeveloper.DuckAPI;
 import com.duckydeveloper.util.Message;
 import fun.stealsolo.Stealsolo;
 import fun.stealsolo.util.BattleLocation;
+import fun.stealsolo.util.BattleRequest;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -30,6 +31,11 @@ public class BattleCommand implements CommandExecutor {
             return false;
         }
 
+        if (player.getName().equalsIgnoreCase(args[0])) {
+            Message.invalid(player, DuckAPI.getLanguageComponent("1v1.SelfRequest"));
+            return false;
+        }
+
         Player target = Bukkit.getPlayer(args[0]);
 
         if (target == null) {
@@ -48,7 +54,7 @@ public class BattleCommand implements CommandExecutor {
 
             Message.successful(target, Message.replaceInComponent(DuckAPI.getLanguageComponent("1v1.Request.Received"), "%player%", player.getName()));
             Message.successful(player, Message.replaceInComponent(DuckAPI.getLanguageComponent("1v1.Request.Sent"), "%target%", target.getName()));
-            Stealsolo.getBattleRequests().put(target.getUniqueId(), player.getUniqueId());
+            Stealsolo.getBattleRequests().add(new BattleRequest(player, target));
             break;
         }
 

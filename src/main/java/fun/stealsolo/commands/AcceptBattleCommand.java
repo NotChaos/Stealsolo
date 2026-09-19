@@ -4,6 +4,7 @@ import com.duckydeveloper.DuckAPI;
 import com.duckydeveloper.util.Message;
 import fun.stealsolo.Stealsolo;
 import fun.stealsolo.util.BattleLocation;
+import fun.stealsolo.util.BattleRequest;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -39,32 +40,29 @@ public class AcceptBattleCommand implements CommandExecutor {
             return false;
         }
 
-        UUID uuid = Stealsolo.getBattleRequests().get(player.getUniqueId());
+        Player requestSender = Stealsolo.getBattleRequests().stream()
+                .filter(request -> request.sender().equals(target))
+                .map(BattleRequest::sender)
+                .findFirst()
+                .orElse(null);
 
-        if (uuid == null) {
+        if (requestSender == null) {
             Message.invalid(player, DuckAPI.getLanguageComponent("1v1.NoRequest"));
             return false;
         }
 
-        Player requester = Bukkit.getPlayer(uuid);
+        if (Bukkit.getPluginManager().getPlugin("DeluxeCombat") != null) {
+            if (Stealsolo.getDeluxecombatApi().isInCombat(player)) {
+                Message.invalid(player, DuckAPI.getLanguageComponent("1v1.InCombat.Self"));
+                Stealsolo.getBattleRequests().remove(new BattleRequest(requestSender, player));
+                return false;
+            }
 
-        if (requester == null) {
-            Message.invalid(player, DuckAPI.getLanguageComponent("1v1.NoRequest"));
-            return false;
-        }
-
-        if (Stealsolo.getDeluxecombatApi().isInCombat(player)) {
-            Message.invalid(player, DuckAPI.getLanguageComponent("1v1.InCombat.Self"));
-            Stealsolo.getBattleRequests().remove(player.getUniqueId(), target.getUniqueId());
-            Stealsolo.getBattleRequests().remove(target.getUniqueId(), player.getUniqueId());
-            return false;
-        }
-
-        if (Stealsolo.getDeluxecombatApi().isInCombat(target)) {
-            Message.invalid(player, DuckAPI.getLanguageComponent("1v1.InCombat.Target"));
-            Stealsolo.getBattleRequests().remove(player.getUniqueId(), target.getUniqueId());
-            Stealsolo.getBattleRequests().remove(target.getUniqueId(), player.getUniqueId());
-            return false;
+            if (Stealsolo.getDeluxecombatApi().isInCombat(target)) {
+                Message.invalid(player, DuckAPI.getLanguageComponent("1v1.InCombat.Target"));
+                Stealsolo.getBattleRequests().remove(new BattleRequest(requestSender, player));
+                return false;
+            }
         }
 
         BattleLocation freeLocation = null;
@@ -80,7 +78,7 @@ public class AcceptBattleCommand implements CommandExecutor {
             return false;
         }
 
-        Stealsolo.getBattleRequests().remove(target.getUniqueId());
+        Stealsolo.getBattleRequests().remove(new BattleRequest(requestSender, player));
         Stealsolo.getBattleLocations().remove(freeLocation);
 
         BattleLocation active = new BattleLocation(freeLocation.spawnPoint(), true, player, target);

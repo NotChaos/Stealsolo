@@ -4,7 +4,8 @@ description: StealSolo plugin
 version: '${version}'
 main: fun.stealsolo.Stealsolo
 api-version: '1.21'
-softdepend: ["PlayerPoints", "PlaceholderAPI", "packetevents", "HeadDatabase", "DeluxeCombat", "WorldGuard"]
+depend: ["WorldGuard", "packetevents"]
+softdepend: ["PlayerPoints", "PlaceholderAPI", "HeadDatabase", "DeluxeCombat"]
 commands:
   givekeepinventoryitem:
     description: Give an item that would normally be lost on death

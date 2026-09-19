@@ -76,6 +76,6 @@ public class onDeathInBattleEvent implements Listener {
 
             Stealsolo.getBattleLocations().remove(arena);
             Stealsolo.getBattleLocations().add(new BattleLocation(arena.spawnPoint(), false, null, null));
-        }, 20L * 10);
+        }, 20L * 25);
     }
 }
